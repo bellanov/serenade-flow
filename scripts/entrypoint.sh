@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# Bootstrap the application workflow.
+# Execute ETL Pipeline.
 
-echo "BOOTSTRAPPING application workflow"
-python3 package/app.py
-echo "BOOTSTRAPPING application workflow COMPLETED"
+python3 src/pipeline.py

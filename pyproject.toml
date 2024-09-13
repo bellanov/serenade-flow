@@ -1,0 +1,26 @@
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "example_package_YOUR_USERNAME_HERE"
+version = "v1.2.3"
+authors = [
+  { name="Bellanov Apilli", email="bellanovapilli@gmail.com" },
+]
+description = "ETL Pipeline Implementation."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/"]
+
+[project.urls]
+Homepage = "https://github.com/bellanov/etl-pipeline"
+Issues = "https://github.com/bellanov/etl-pipeline/issues"
