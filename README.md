@@ -1,10 +1,10 @@
-# ETL Pipeline
+# SerenadeFlow
 
-ETL Pipeline Implementation. It *Extracts*, *Transforms*, and *Loads* data from both local and remote data sources.
+*SeranadeFlow* is an ETL Pipeline Implementation. It *Extracts*, *Transforms*, and *Loads* data from both local and remote data sources.
 
 ## Requirements
 
-The project is configured to build and test inside a `Docker` in a _Python 3.12_ environment.
+The project is configured to build and test inside a `Docker` container in a _Python 3.12_ environment.
 
 ## Development Workflow
 
@@ -17,7 +17,7 @@ First, a local project environment needs to be created, then the project's modul
    cd etl-pipeline
    ```
 
-3. Create a virtual environment.
+2. Create a virtual environment.
 
    ```sh
    # Create Virtual Environment
@@ -33,11 +33,14 @@ First, a local project environment needs to be created, then the project's modul
    deactivate
    ```
 
-4. Make your changes and **build** the application.
+3. Make your changes and **build** the application.
 
    ```sh
-   # Build & Unit Test Docker Image
+   # Build Python Package
    scripts/build.sh
+
+   # Build & Unit Test Docker Image
+   scripts/docker.sh
 
    # Execute Docker Image
    scripts/deploy.sh
@@ -52,7 +55,7 @@ First, a local project environment needs to be created, then the project's modul
    scripts/lint.sh
    ```
 
-5. Tag and version code changes. This will trigger a build in **Google Cloud Platform (GCP)** that will be associated with the pull request.
+4. Tag and version code changes. This will trigger a build in **Google Cloud Platform (GCP)** that will be associated with the pull request.
 
    ```sh
    git tag -a "1.2.3" -m "Version 1.2.3"
