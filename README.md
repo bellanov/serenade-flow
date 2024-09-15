@@ -1,6 +1,6 @@
 # SerenadeFlow
 
-*SeranadeFlow* is an ETL Pipeline Implementation. It *Extracts*, *Transforms*, and *Loads* data from both local and remote data sources.
+*SeranadeFlow* is an ETL Pipeline Implementation. It *Extracts*, *Transforms*, and *Loads* data from local or remote data sources.
 
 ## Requirements
 
@@ -36,20 +36,17 @@ First, a local project environment needs to be created, then the project's modul
 3. Make your changes and **build** the application.
 
    ```sh
-   # Build Python Package
+   # Build a Python package distribution
    scripts/build.sh
 
-   # Build & Unit Test Docker Image
-   scripts/docker.sh
+   # Install the Python package locally, from testpypi.
+   scripts/install.sh
 
-   # Execute Docker Image
-   scripts/deploy.sh
+   # Publish a distribution to PyPi (testpypi)
+   scripts/release.sh
 
-   # Teardown Docker Container
-   scripts/teardown.sh
-
-   # Purge Docker Image
-   scripts/purge.sh
+   # Execute Unit Tests
+   scripts/test.sh
 
    # Lint Code Base
    scripts/lint.sh
