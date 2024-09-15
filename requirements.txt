@@ -4,3 +4,4 @@ pandas
 pylint
 pytest
 requests
+twine

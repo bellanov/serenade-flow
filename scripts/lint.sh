@@ -3,7 +3,7 @@
 # Lint the code base.
 
 echo "Linting Package..."
-pylint src/
+pylint serenade_flow/
 
 echo "Linting Tests..."
 pylint tests/
