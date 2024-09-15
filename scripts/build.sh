@@ -1,5 +1,5 @@
 #!/bin/bash
 #
-# Build Docker containers after code changes.
+# Build a Python distribution.
 
-docker build -t python-template .
+python3 -m build
