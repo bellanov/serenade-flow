@@ -1,30 +1,41 @@
 """
 ETL Pipeline Implementation.
 
-Extract, Load, and Transform data from both local and remote data sources.
+Extract, Load, and Transform data from local or remote data sources.
 """
 from concurrent.futures import ThreadPoolExecutor
 import logging
-import os
 
 import pandas as pd
-import requests
 
-# Data Sources
-DATA_SOURCE_URL = os.getenv("DATA_SOURCE_URL")
-DATA_SOURCE_PATH = os.getenv("DATA_SOURCE_PATH")
+# Pipeline Configuration
+CONFIG = {}
 
-# Configure string format for consumption into logging platforms.
+# Configure Loggiing
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)-15s %(levelname)-8s %(message)s"
 )
 
 # Initialize Logging
-logger = logging.getLogger("etl-pipeline")
+logger = logging.getLogger("serenade-flow")
+
+
+def configure(config: dict) -> dict:
+    """Configure the ETL Pipeline."""
+    logging.info("Configuring Pipeline")
+
+    # TODO: Harden this block with schema validation
+    CONFIG["data_format"] = config["data_format"]
+    CONFIG["data_source"] = config["data_source"]
+    CONFIG["data_source_path"] = config["data_source_path"]
+    return CONFIG
 
 
 def extract_local_data() -> pd.DataFrame:
-    logging.info("Extracting local data")
+    """Extract data from a local data source."""
+    logging.info("Extracting Local Data")
+
+    # TODO: Retrieve input from a directory of files
     local_data = [
         {"id": 1, "name": "Alice", "age": 30},
         {"id": 2, "name": "Bob", "age": 25},
@@ -34,48 +45,30 @@ def extract_local_data() -> pd.DataFrame:
 
 
 def extract_remote_data():
-    try:
-        response = requests.get(DATA_SOURCE_URL, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except ConnectionError as e:
-        logging.error(f"Failed to connect to {DATA_SOURCE_URL}: {e}")
-        return None
-    except requests.RequestException as e:
-        if DATA_SOURCE_URL is None:
-            logging.critical("Environment variable DATA_SOURCE_URL is not defined.")
-        else:
-            logging.error(f"API request failed: {e}.")
-        return None
+    """Extract data from a remote data source."""
+    logging.info("Extracting Remote Data")
+    return {}
 
 
 def extract() -> pd.DataFrame:
+    """Extract."""
+    data_future = None
+    data_payload = None
+
     with ThreadPoolExecutor() as executor:
-        local_future = executor.submit(extract_local_data)
-        remote_future = executor.submit(extract_remote_data)
+        if CONFIG["data_source"] == "local":
+            data_future = executor.submit(extract_local_data)
+        elif CONFIG["data_source"] == "remote":
+            data_future = executor.submit(extract_remote_data)
 
-        dummy_data = local_future.result()
-        api_data = remote_future.result()
+        data_payload = data_future.result()
 
-    if api_data is None:
-        return dummy_data
-    return pd.concat([dummy_data, pd.DataFrame(api_data)], ignore_index=True)
-
-
-def etl_pipeline():
-    """ETL Pipeline Execution."""
-    logger.info("Executing ETL Pipeline")
-
-    try:
-        # Extract
-        raw_data = extract()
-        logging.info(f"Extracted {len(raw_data)} records")
-    except Exception as e:
-        logging.error(f"ETL pipeline failed: {str(e)}")
-        raise
-
-    return "Extract, Transform, and Load!!!"
+    return data_payload
 
 
-if __name__ == "__main__":
-    etl_pipeline()
+def load(data: pd.DataFrame, output_prefix: str):
+    """Export data to CSV and JSON files."""
+    logging.info("Loading Data")
+    data.to_csv(f'{output_prefix}.csv', index=False)
+    data.to_json(f'{output_prefix}.json', orient='records')
+    return "Data loaded successfully"

@@ -221,3 +221,5 @@ pyrightconfig.json
 
 # Testing / Coverage
 coverage/
+output.csv
+output.json

@@ -1,7 +1,7 @@
 build
 coverage
+jsonschema
 pandas
 pylint
 pytest
-requests
 twine

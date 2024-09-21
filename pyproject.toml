@@ -5,8 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "andy-serenade-flow"
-version = "0.1.1"
-# version = "v1.2.3"
+version = "0.1.5"
 authors = [
   { name="Bellanov Apilli", email="bellanovapilli@gmail.com" },
 ]
