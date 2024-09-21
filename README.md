@@ -1,60 +1,11 @@
 # SerenadeFlow
 
-*SeranadeFlow* is an ETL Pipeline Implementation. It *Extracts*, *Transforms*, and *Loads* data from local or remote data sources.
+*SeranadeFlow* is an ETL Pipeline Implementation powered by *WASM*. It *Extracts*, *Transforms*, and *Loads* data from local or remote data sources.
 
 ## Requirements
 
-The project is configured to build and test inside a `Docker` container in a _Python 3.12_ environment.
+The project is configured to operate in _Python >= 3.8_ enviornments.
 
-## Development Workflow
+## Quickstart
 
-First, a local project environment needs to be created, then the project's modules will be installed into locally into a virtual environment.
-
-1. Clone the repository.
-
-   ```sh
-   git clone https://github.com/bellanov/etl-pipeline.git
-   cd etl-pipeline
-   ```
-
-2. Create a virtual environment.
-
-   ```sh
-   # Create Virtual Environment
-   python3 -m venv .venv
-
-   # Activate Virtual Environment
-   source .venv/bin/activate
-
-   # Install Dependencies
-   pip install -r requirements.txt 
-
-   # Deactivate Virtual Environment
-   deactivate
-   ```
-
-3. Make your changes and **build** the application.
-
-   ```sh
-   # Build a Python package distribution
-   scripts/build.sh
-
-   # Install the Python package locally, from testpypi.
-   scripts/install.sh
-
-   # Publish a distribution to PyPi (testpypi)
-   scripts/release.sh
-
-   # Execute Unit Tests
-   scripts/test.sh
-
-   # Lint Code Base
-   scripts/lint.sh
-   ```
-
-4. Tag and version code changes. This will trigger a build in **Google Cloud Platform (GCP)** that will be associated with the pull request.
-
-   ```sh
-   git tag -a "1.2.3" -m "Version 1.2.3"
-   git push --follow-tags
-   ```
+Coming Soon.
