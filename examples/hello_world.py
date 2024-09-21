@@ -25,6 +25,8 @@ def quality_assurance(data):
     return data
 
 
+print("\nExecuting Hello World Example\n")
+
 # Configure ETL Pipeline
 pipeline.configure({
     "data_source": "local",
@@ -44,4 +46,4 @@ print(f"Transfomred Data:\n {data} \n")
 data = quality_assurance(data)
 
 # Load
-pipeline.load(data, "output")
+pipeline.load(data, "hello_world")

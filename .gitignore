@@ -221,5 +221,11 @@ pyrightconfig.json
 
 # Testing / Coverage
 coverage/
+
+# Examples
+hello_world.csv
+hello_world.json
+quickstart.csv
+quickstart.json
 output.csv
 output.json
