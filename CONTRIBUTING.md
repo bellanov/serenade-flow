@@ -7,6 +7,10 @@ to help get your contribution accepted.
 
 The project is configured to operate in _Python >= 3.8_ enviornments.
 
+## Issue Workflow
+
+Before any development is undertaken, there should be a **GitHub Issue** created to properly *track* and *isolate* the changes. A branch is then created from the issue and it is to that branch that work will be submitted.
+
 ## Development Workflow
 
 First, a local project environment needs to be created, then the project's modules will be installed into locally into a virtual environment.
@@ -41,7 +45,7 @@ First, a local project environment needs to be created, then the project's modul
    scripts/build.sh
 
    # Install the Python package locally, from testpypi.
-   scripts/install.sh
+   scripts/install.sh "<VERSION>"
 
    # Publish a distribution to PyPi (testpypi)
    scripts/release.sh
