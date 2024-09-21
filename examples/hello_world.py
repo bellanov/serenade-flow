@@ -15,6 +15,16 @@ def transform(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+def quality_assurance(data):
+    """Perform quality assurance checks."""
+    for col in data.columns:
+        if data[col].dtype == 'object':
+            data[col] = data[col].apply(lambda x: str(x) if isinstance(x, dict) else x)
+    
+    data = data.drop_duplicates()
+    return data
+
+
 # Configure ETL Pipeline
 pipeline.configure({
     "data_source": "local",
@@ -29,6 +39,9 @@ print(f"Raw Data:\n {raw_data} \n")
 # Transform
 data = transform(raw_data)
 print(f"Transfomred Data:\n {data} \n")
+
+# Quality Assurance
+data = quality_assurance(data)
 
 # Load
 pipeline.load(data, "output")

@@ -72,14 +72,3 @@ def load(data: pd.DataFrame, output_prefix: str):
     data.to_csv(f'{output_prefix}.csv', index=False)
     data.to_json(f'{output_prefix}.json', orient='records')
     return "Data loaded successfully"
-
-
-def quality_assurance(data):
-    """Perform quality assurance checks."""
-    logging.info("Quality Assurance Checks")
-    for col in data.columns:
-        if data[col].dtype == 'object':
-            data[col] = data[col].apply(lambda x: str(x) if isinstance(x, dict) else x)
-    
-    data = data.drop_duplicates()
-    return data
