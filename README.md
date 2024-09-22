@@ -1,8 +1,8 @@
 # SerenadeFlow
 
-*SeranadeFlow* is an ETL Pipeline Implementation powered by *WASM*.
+*SeranadeFlow* is an ETL Pipeline Implementation.
 
-It *Extracts*, *Transforms*, and *Loads* data from local or remote data sources.
+It *Extracts*, *Transforms*, and *Loads* data from remote data sources.
 
 ## Requirements
 
