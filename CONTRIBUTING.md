@@ -3,13 +3,20 @@
 Andy projects accept contributions via GitHub pull requests. This document outlines the process
 to help get your contribution accepted.
 
-## Requirements
+## Prerequisites
 
-The project is configured to operate in _Python >= 3.8_ enviornments.
+- `python` 3.00 or greater
+- `pip`
 
-## Issue Workflow
+## Issue Assignment
 
 Before any development is undertaken, there should be a **GitHub Issue** created to properly *track* and *isolate* the changes. A branch is then created from the issue and it is to that branch that work will be submitted.
+
+1. Consult the *[Andy Project Backlog](https://github.com/users/bellanov/projects/18/views/6)* to see any tickets that are **Unassigned**. If a task is available for this *repository*, **assign** it to yourself to reserve it. The backlog contains pending *GitHub Issues* that have yet to be scheduled for development within an iteration.
+
+2. Once you have assigned yourself an issue, schedule the issue within an **Iteration** so it is visible on the *Kanban Board*. Once the issue is visible on the Kanban Board, drag the issue from **Backlog** to **In Progress**.
+
+3. After the issue has been transitioned to **In Progress**, a **Branch** within the issue should be created to properly isolate changes.
 
 ## Development Workflow
 
