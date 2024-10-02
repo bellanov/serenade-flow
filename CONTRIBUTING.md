@@ -55,11 +55,11 @@ First, a local project environment needs to be created, then the project's modul
    # Build a Python package distribution
    scripts/build.sh
 
-   # Install the Python package locally, from testpypi.
-   scripts/install.sh "<VERSION>"
-
    # Publish a distribution to PyPi (testpypi)
    scripts/release.sh
+
+   # Install the Python package locally, from testpypi.
+   scripts/install.sh "<VERSION>"
 
    # Execute Unit Tests
    scripts/test.sh
