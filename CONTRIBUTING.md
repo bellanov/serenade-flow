@@ -16,7 +16,11 @@ Before any development is undertaken, there should be a **GitHub Issue** created
 
 2. Once you have assigned yourself an issue, schedule the issue within an **Iteration** so it is visible on the *Kanban Board*. Once the issue is visible on the Kanban Board, drag the issue from **Backlog** to **In Progress**.
 
-3. After the issue has been transitioned to **In Progress**, a **Branch** within the issue should be created to properly isolate changes.
+3. After the issue has been transitioned to **In Progress**, a **Branch** within the issue should be created to properly isolate changes. This branch will been the one to conduct development within, or open external *Pull Requests* against.
+
+## PyPi API Key
+
+An **API Key** is required to be able to publish releases to *testpypi*. Upon the assignment of an issue, the repository owner will be in touch.
 
 ## Development Workflow
 
