@@ -49,7 +49,7 @@ First, a local project environment needs to be created, then the project's modul
    deactivate
    ```
 
-3. Make your changes and **build** the application.
+3. Make your changes, increment the version in `pyproject.toml`, and **build** the application.
 
    ```sh
    # Build a Python package distribution
