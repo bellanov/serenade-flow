@@ -11,7 +11,7 @@ authors = [
   { name="Ajay Bandaru", email="ajaybandaru17@gmail.com" }
 ]
 description = """
-  ETL Pipeline Implementation powered by WASM. Extract, Transform, and Load data from both local and remote data sources.
+  ETL Pipeline Implementation. Extract, Transform, and Load data from remote data sources.
   """
 readme = "README.md"
 requires-python = ">=3.8"
