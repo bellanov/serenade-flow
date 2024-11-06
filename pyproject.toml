@@ -5,13 +5,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "andy-serenade-flow"
-version = "1.2.5"
+version = "1.2.6"
 authors = [
   { name="Bellanov Apilli", email="bellanovapilli@gmail.com" },
   { name="Ajay Bandaru", email="ajaybandaru17@gmail.com" }
 ]
 description = """
-  ETL Pipeline Implementation. Extract, Transform, and Load data from remote data sources.
+  ETL Pipeline Implementation. Extract, Transform, and Load data from local or remote data sources.
   """
 readme = "README.md"
 requires-python = ">=3.8"
