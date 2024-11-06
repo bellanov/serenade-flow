@@ -49,17 +49,17 @@ First, a local project environment needs to be created, then the project's modul
    deactivate
    ```
 
-3. Make your changes and **build** the application.
+3. Make your changes, increment the version in `pyproject.toml`, and **build** the application.
 
    ```sh
    # Build a Python package distribution
    scripts/build.sh
 
-   # Install the Python package locally, from testpypi.
-   scripts/install.sh "<VERSION>"
-
    # Publish a distribution to PyPi (testpypi)
    scripts/release.sh
+
+   # Install the Python package locally, from testpypi.
+   scripts/install.sh "<VERSION>"
 
    # Execute Unit Tests
    scripts/test.sh
