@@ -20,7 +20,7 @@ def quality_assurance(data):
     for col in data.columns:
         if data[col].dtype == 'object':
             data[col] = data[col].apply(lambda x: str(x) if isinstance(x, dict) else x)
-   
+  
     data = data.drop_duplicates()
     return data
 
