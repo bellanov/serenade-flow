@@ -20,7 +20,7 @@ def quality_assurance(data):
     for col in data.columns:
         if data[col].dtype == 'object':
             data[col] = data[col].apply(lambda x: str(x) if isinstance(x, dict) else x)
-    
+   
     data = data.drop_duplicates()
     return data
 
@@ -31,7 +31,7 @@ print("\nExecuting Hello World Example\n")
 pipeline.configure({
     "data_source": "local",
     "data_source_path": "/path/to/directory",
-    "data_format" : "csv"
+    "data_format": "csv"
 })
 
 # Extract

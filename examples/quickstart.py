@@ -1,6 +1,5 @@
 """Example SerenadeFlow Usage."""
 
-import pandas as pd
 from serenade_flow import pipeline
 
 
@@ -10,7 +9,7 @@ print("\nExecuting Quickstart Example\n")
 pipeline.configure({
     "data_source": "local",
     "data_source_path": "/path/to/directory",
-    "data_format" : "csv"
+    "data_format": "csv"
 })
 
 # Extract

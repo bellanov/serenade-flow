@@ -11,7 +11,7 @@ def test_extact_local():
     pipeline.configure({
         "data_source": "local",
         "data_source_path": "/path/to/local/directory",
-        "data_format" : "csv"
+        "data_format": "csv"
     })
     data = pipeline.extract()
     assert len(data) == 3
@@ -23,7 +23,7 @@ def test_extact_remote():
     pipeline.configure({
         "data_source": "remote",
         "data_source_path": "http://path/to/storage/bucket",
-        "data_format" : "csv"
+        "data_format": "csv"
     })
     data = pipeline.extract()
     assert data == {}
@@ -35,7 +35,7 @@ def test_load():
     pipeline.configure({
         "data_source": "local",
         "data_source_path": "http://path/to/storage/bucket",
-        "data_format" : "csv"
+        "data_format": "csv"
     })
     data = pipeline.extract()
     assert pipeline.load(data, "output") == "Data loaded successfully"
