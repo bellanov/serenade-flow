@@ -4,4 +4,6 @@ jsonschema
 pandas
 pylint
 pytest
+requests
+python-dotenv
 twine
