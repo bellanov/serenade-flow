@@ -9,16 +9,13 @@ from unittest.mock import patch
 
 from serenade_flow import pipeline
 
-# Path to the local data directory
-DATA_DIRECTORY = '/Users/Ajay17/serenade-flow/df'
-
 @pytest.mark.unit
-def test_extract_local():
+def test_extract_local(sample_data_directory):
     """Test Local Extraction."""
     # Configure the pipeline to use local data
     pipeline.configure({
         "data_source": "local",
-        "data_source_path": DATA_DIRECTORY,
+        "data_source_path": sample_data_directory,
         "data_format": "json"
     })
     
@@ -29,6 +26,9 @@ def test_extract_local():
     assert len(data) > 0  # Ensure that data is extracted
     assert isinstance(data, dict)  # Ensure the data is a dictionary
     assert all(isinstance(df, pd.DataFrame) for df in data.values())  # Ensure all values are DataFrames
+    assert 'outcome_name' in data["Events_NBA.json"].columns
+    assert 'outcome_price' in data["Events_NBA.json"].columns
+    assert 'outcome_point' in data["Events_NBA.json"].columns
 
 @pytest.mark.unit
 def test_extract_remote():
@@ -114,12 +114,12 @@ def test_extract_remote():
         assert 'outcome_point' in df.columns
 
 @pytest.mark.unit
-def test_load():
+def test_load(sample_data_directory):
     """Test Loading Data."""
     # Configure the pipeline to use local data
     pipeline.configure({
         "data_source": "local",
-        "data_source_path": DATA_DIRECTORY,
+        "data_source_path": sample_data_directory,
         "data_format": "json"
     })
     

@@ -8,7 +8,7 @@ import logging
 import os
 import json
 import requests
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import Dict, Any
 
 import pandas as pd
@@ -268,7 +268,7 @@ def transform(data_frames: dict) -> dict:
                 df['outcome_point'] = pd.to_numeric(df['outcome_point'], errors='coerce')
             
             # Add metadata using the new UTC-aware datetime
-            df['processed_at'] = datetime.now(UTC)
+            df['processed_at'] = datetime.now(timezone.utc)
             df['source_file'] = key
             
             # Remove any rows with invalid datetime
@@ -291,3 +291,78 @@ def load(data: dict, output_prefix: str) -> str:
     except Exception as e:
         logging.error(f"Error loading data: {str(e)}")
         return None
+
+def extract_event_odds(sport_key: str, event_id: str) -> pd.DataFrame:
+    """Extract odds for a specific event from the configured data source."""
+    data_source = CONFIG.get("data_source")
+    data_format = CONFIG.get("data_format", "json")
+    data_path = CONFIG.get("data_source_path")
+    
+    def flatten_event(record):
+        flattened_records = []
+        for bookmaker in record.get('bookmakers', []):
+            for market in bookmaker.get('markets', []):
+                for outcome in market.get('outcomes', []):
+                    flattened_record = {
+                        'id': record.get('id'),
+                        'sport_key': record.get('sport_key'),
+                        'sport_title': record.get('sport_title'),
+                        'commence_time': record.get('commence_time'),
+                        'home_team': record.get('home_team'),
+                        'away_team': record.get('away_team'),
+                        'bookmaker_key': bookmaker.get('key'),
+                        'bookmaker_title': bookmaker.get('title'),
+                        'market_key': market.get('key'),
+                        'market_last_update': market.get('last_update'),
+                        'outcome_name': outcome.get('name'),
+                        'outcome_price': outcome.get('price'),
+                        'outcome_point': outcome.get('point')
+                    }
+                    flattened_records.append(flattened_record)
+        return flattened_records
+
+    if data_source == "local":
+        # Find the relevant file for the sport
+        if not data_path or not os.path.isdir(data_path):
+            return pd.DataFrame()
+        for filename in os.listdir(data_path):
+            if filename.endswith('.json') and sport_key.lower() in filename.lower():
+                with open(os.path.join(data_path, filename), 'r') as file:
+                    try:
+                        data = json.load(file)
+                        if isinstance(data, list):
+                            for record in data:
+                                if record.get('id') == event_id and validate_data(record):
+                                    flat = flatten_event(record)
+                                    if flat:
+                                        return pd.DataFrame(flat)
+                        elif isinstance(data, dict):
+                            if data.get('id') == event_id and validate_data(data):
+                                flat = flatten_event(data)
+                                if flat:
+                                    return pd.DataFrame(flat)
+                    except Exception as e:
+                        logging.error(f"Error processing {filename}: {str(e)}")
+        return pd.DataFrame()
+    elif data_source == "remote":
+        try:
+            response = requests.get(data_path)
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    for record in data:
+                        if record.get('id') == event_id and validate_data(record):
+                            flat = flatten_event(record)
+                            if flat:
+                                return pd.DataFrame(flat)
+                elif isinstance(data, dict):
+                    if data.get('id') == event_id and validate_data(data):
+                        flat = flatten_event(data)
+                        if flat:
+                            return pd.DataFrame(flat)
+        except Exception as e:
+            logging.error(f"Error fetching remote data: {str(e)}")
+        return pd.DataFrame()
+    else:
+        logging.error(f"Unknown data source: {data_source}")
+        return pd.DataFrame()
