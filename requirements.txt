@@ -1,8 +1,8 @@
 build
 coverage
+flake8
 jsonschema
 pandas
-pylint
 pytest
 requests
 python-dotenv
