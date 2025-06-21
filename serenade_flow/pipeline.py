@@ -73,6 +73,7 @@ SPORTS_EVENT_SCHEMA = {
     "required": ["id", "sport_key", "commence_time", "home_team", "away_team", "bookmakers"]
 }
 
+
 def validate_data(data: Dict[str, Any]) -> bool:
     """Validate data against schema."""
     try:
@@ -82,6 +83,7 @@ def validate_data(data: Dict[str, Any]) -> bool:
         logging.warning(f"Data validation failed: {str(e)}")
         return False
 
+
 def transform_datetime(date_str: str) -> datetime:
     """Transform datetime string to UTC datetime object."""
     try:
@@ -89,6 +91,7 @@ def transform_datetime(date_str: str) -> datetime:
     except Exception as e:
         logging.error(f"DateTime transformation failed: {str(e)}")
         return None
+
 
 def configure(config: dict) -> dict:
     """Configure the ETL Pipeline."""
@@ -167,7 +170,7 @@ def extract_remote_data() -> dict:
     """Extract data from a remote data source."""
     logging.info("Extracting Remote Data")
     data_frames = {}
-    
+
     try:
         response = requests.get(CONFIG["data_source_path"])
         if response.status_code == 200:
@@ -227,7 +230,7 @@ def extract_remote_data() -> dict:
             logging.error(f"Failed to fetch remote data: {response.status_code}")
     except Exception as e:
         logging.error(f"Error fetching remote data: {str(e)}")
-    
+
     return data_frames
 
 
@@ -256,17 +259,17 @@ def transform(data_frames: dict) -> dict:
                 df['commence_time'] = df['commence_time'].apply(transform_datetime)
             if 'market_last_update' in df.columns:
                 df['market_last_update'] = df['market_last_update'].apply(transform_datetime)
-            
+
             # Standardize team names
             if 'home_team' in df.columns:
                 df['home_team'] = df['home_team'].str.title()
             if 'away_team' in df.columns:
                 df['away_team'] = df['away_team'].str.title()
-            
+
             # Convert outcome_point to numeric, handling potential NaNs
             if 'outcome_point' in df.columns:
                 df['outcome_point'] = pd.to_numeric(df['outcome_point'], errors='coerce')
-            
+
             # Add metadata using the new UTC-aware datetime
             df['processed_at'] = datetime.now(timezone.utc)
             df['source_file'] = key
