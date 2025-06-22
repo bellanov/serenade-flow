@@ -231,3 +231,4 @@ quickstart.csv
 quickstart.json
 output.csv
 output.json
+output_*.csv
