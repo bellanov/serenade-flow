@@ -2,12 +2,12 @@
 
 import pytest
 import pandas as pd
-import os
 import json
 from serenade_flow.pipeline import extract_local_data, transform, load
 from unittest.mock import patch
 
 from serenade_flow import pipeline
+
 
 @pytest.mark.unit
 def test_extract_local(sample_data_directory):
@@ -18,17 +18,19 @@ def test_extract_local(sample_data_directory):
         "data_source_path": sample_data_directory,
         "data_format": "json"
     })
-    
+
     # Extract data
     data = pipeline.extract()
-    
+
     # Check that the data contains the expected number of records
     assert len(data) > 0  # Ensure that data is extracted
     assert isinstance(data, dict)  # Ensure the data is a dictionary
-    assert all(isinstance(df, pd.DataFrame) for df in data.values())  # Ensure all values are DataFrames
+    # Ensure all values are DataFrames
+    assert all(isinstance(df, pd.DataFrame) for df in data.values())
     assert 'outcome_name' in data["Events_NBA.json"].columns
     assert 'outcome_price' in data["Events_NBA.json"].columns
     assert 'outcome_point' in data["Events_NBA.json"].columns
+
 
 @pytest.mark.unit
 def test_extract_remote():
@@ -84,11 +86,12 @@ def test_extract_remote():
             ]
         }
     ]
-    
+
     # Create a mock response object
     class MockResponse:
         def __init__(self):
             self.status_code = 200
+
         def json(self):
             return mock_response_data
 
@@ -99,19 +102,21 @@ def test_extract_remote():
             "data_source_path": "http://remote-api-endpoint/data",
             "data_format": "json"
         })
-        
+
         data = pipeline.extract()
         assert isinstance(data, dict)
         assert len(data) > 0
         assert all(isinstance(df, pd.DataFrame) for df in data.values())
         # Verify the mock data was processed correctly
-        assert len(data["remote_data.json"]) == 4 # Expected 2 records * 2 outcomes per record = 4 flattened records
+        # Expected 2 records * 2 outcomes per record = 4 flattened records
+        assert len(data["remote_data.json"]) == 4
         df = data["remote_data.json"]
         assert 'bookmaker_key' in df.columns
         assert 'market_key' in df.columns
         assert 'outcome_name' in df.columns
         assert 'outcome_price' in df.columns
         assert 'outcome_point' in df.columns
+
 
 @pytest.mark.unit
 def test_load(sample_data_directory):
@@ -122,15 +127,17 @@ def test_load(sample_data_directory):
         "data_source_path": sample_data_directory,
         "data_format": "json"
     })
-    
+
     # Extract data
     data = pipeline.extract()
-    
+
     # Print the data to verify its structure
     print(data)  # Add this line to inspect the data structure
-    
+
     # Load the data and check for success message
-    assert pipeline.load(data, "output") == "Data loaded successfully"  # Check for success message
+    # Check for success message
+    assert pipeline.load(data, "output") == "Data loaded successfully"
+
 
 @pytest.fixture
 def sample_data_directory(tmp_path):
@@ -196,7 +203,8 @@ def test_extract_local_data(sample_data_directory):
     data_frames = extract_local_data(sample_data_directory)
     assert "Events_NBA.json" in data_frames
     assert isinstance(data_frames["Events_NBA.json"], pd.DataFrame)
-    assert len(data_frames["Events_NBA.json"]) == 4  # Each original record has 2 outcomes, so 2*2=4 flattened records
+    # Each original record has 2 outcomes, so 2*2=4 flattened records
+    assert len(data_frames["Events_NBA.json"]) == 4
     df = data_frames["Events_NBA.json"]
     assert 'bookmaker_key' in df.columns
     assert 'market_key' in df.columns
@@ -210,10 +218,14 @@ def test_transform_data(sample_data_directory):
     """Test the transformation of extracted data."""
     data_frames = extract_local_data(sample_data_directory)
     transformed_data = transform(data_frames)
-    assert transformed_data["Events_NBA.json"]["home_team"].iloc[0] == "Team A"  # Check capitalization
-    assert pd.to_datetime(transformed_data["Events_NBA.json"]["commence_time"].iloc[0])  # Check datetime conversion
-    assert pd.to_datetime(transformed_data["Events_NBA.json"]["market_last_update"].iloc[0])  # Check market_last_update datetime conversion
-    assert pd.api.types.is_numeric_dtype(transformed_data["Events_NBA.json"]["outcome_point"])  # Check outcome_point is numeric
+    # Check capitalization
+    assert transformed_data["Events_NBA.json"]["home_team"].iloc[0] == "Team A"
+    # Check datetime conversion
+    assert pd.to_datetime(transformed_data["Events_NBA.json"]["commence_time"].iloc[0])
+    # Check market_last_update datetime conversion
+    assert pd.to_datetime(transformed_data["Events_NBA.json"]["market_last_update"].iloc[0])
+    # Check outcome_point is numeric
+    assert pd.api.types.is_numeric_dtype(transformed_data["Events_NBA.json"]["outcome_point"])
 
 
 @pytest.mark.unit
@@ -222,7 +234,8 @@ def test_load_data(sample_data_directory, tmp_path):
     data_frames = extract_local_data(sample_data_directory)
     transformed_data = transform(data_frames)
     load(transformed_data, str(tmp_path / "processed_data"))
-    assert (tmp_path / "processed_data_Events_NBA.csv").exists()  # Check if file was created
+    # Check if file was created
+    assert (tmp_path / "processed_data_Events_NBA.csv").exists()
 
 
 @pytest.mark.unit
@@ -255,10 +268,11 @@ def test_remote_load():
             ]
         }
     ]
-    
+
     class MockResponse:
         def __init__(self):
             self.status_code = 200
+
         def json(self):
             return mock_response_data
 
@@ -268,6 +282,64 @@ def test_remote_load():
             "data_source_path": "http://remote-api-endpoint/data",
             "data_format": "json"
         })
-        
+
         data = pipeline.extract()
-        assert pipeline.load(data, "output") == "Data loaded successfully"
+        assert isinstance(data, dict)
+        assert len(data) > 0
+        assert all(isinstance(df, pd.DataFrame) for df in data.values())
+
+
+@pytest.mark.unit
+def test_extract_empty_file(tmp_path):
+    """Test extraction from an empty JSON file."""
+    empty_file = tmp_path / "Empty.json"
+    empty_file.write_text("")
+    data_frames = extract_local_data(str(tmp_path))
+    # Should not raise, and should not include the empty file
+    assert "Empty.json" not in data_frames or data_frames["Empty.json"].empty
+
+
+@pytest.mark.unit
+def test_extract_malformed_json(tmp_path, caplog):
+    """Test extraction from a malformed JSON file."""
+    malformed_file = tmp_path / "Malformed.json"
+    malformed_file.write_text("{not: valid json}")
+    with caplog.at_level("ERROR"):
+        data_frames = extract_local_data(str(tmp_path))
+    # Should not raise, and should not include the malformed file
+    assert "Malformed.json" not in data_frames or data_frames["Malformed.json"].empty
+    assert any("Error processing Malformed.json" in msg for msg in caplog.text.splitlines())
+
+
+@pytest.mark.unit
+def test_extract_missing_fields(tmp_path):
+    """Test extraction from a file with missing required fields."""
+    data = [
+        {"id": "1", "sport_key": "basketball_nba"}  # Missing most required fields
+    ]
+    file = tmp_path / "MissingFields.json"
+    file.write_text(json.dumps(data))
+    data_frames = extract_local_data(str(tmp_path))
+    # Should not raise, and should not include any valid records
+    assert "MissingFields.json" not in data_frames or data_frames["MissingFields.json"].empty
+
+
+@pytest.mark.unit
+def test_extract_invalid_types(tmp_path):
+    """Test extraction from a file with invalid data types."""
+    data = [
+        {
+            "id": "1",
+            "sport_key": "basketball_nba",
+            "sport_title": "NBA",
+            "home_team": "Team A",
+            "away_team": "Team B",
+            "commence_time": "2025-02-04T00:10:00Z",
+            "bookmakers": "not_a_list"
+        }
+    ]
+    file = tmp_path / "InvalidTypes.json"
+    file.write_text(json.dumps(data))
+    data_frames = extract_local_data(str(tmp_path))
+    # Should not raise, and should not include any valid records
+    assert "InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty
