@@ -77,15 +77,15 @@ def _validate_bookmaker(bookmaker: dict) -> bool:
         return False
     if 'key' not in bookmaker or 'title' not in bookmaker:
         return False
-    
+
     markets = bookmaker.get('markets', [])
     if not isinstance(markets, list):
         return False
-    
+
     for market in markets:
         if not _validate_market(market):
             return False
-    
+
     return True
 
 
@@ -95,15 +95,15 @@ def _validate_market(market: dict) -> bool:
         return False
     if 'key' not in market or 'last_update' not in market:
         return False
-    
+
     outcomes = market.get('outcomes', [])
     if not isinstance(outcomes, list):
         return False
-    
+
     for outcome in outcomes:
         if not _validate_outcome(outcome):
             return False
-    
+
     return True
 
 
@@ -119,8 +119,10 @@ def _validate_outcome(outcome: dict) -> bool:
 def validate_data(data: Dict[str, Any]) -> bool:
     """Validate the structure of the data."""
     try:
-        required_fields = ['id', 'sport_key', 'sport_title', 'home_team',
-                          'away_team', 'commence_time', 'bookmakers']
+        required_fields = [
+            'id', 'sport_key', 'sport_title', 'home_team',
+            'away_team', 'commence_time', 'bookmakers'
+        ]
 
         if not isinstance(data, dict):
             return False
@@ -143,7 +145,7 @@ def validate_data(data: Dict[str, Any]) -> bool:
                 return False
 
         return True
-        
+
     except Exception:
         return False
 
@@ -162,6 +164,7 @@ def configure(config: dict) -> dict:
     """Configure the pipeline with the given settings."""
     CONFIG.update(config)
     return CONFIG
+
 
 def _flatten_record(record: dict) -> list:
     """Flatten a single record into multiple rows."""
@@ -195,27 +198,27 @@ def _process_json_data(data: Any, filename: str) -> pd.DataFrame:
         for record in data:
             if validate_data(record):
                 flattened_records.extend(_flatten_record(record))
-        
+
         if flattened_records:
             return pd.DataFrame(flattened_records)
-    
+
     elif isinstance(data, dict):
         if validate_data(data):
             flattened_records = _flatten_record(data)
             if flattened_records:
                 return pd.DataFrame(flattened_records)
-    
+
     return pd.DataFrame()
 
 
 def extract_local_data(data_directory: str) -> dict:
     """Extract data from local JSON files."""
     data_frames = {}
-    
+
     if not os.path.isdir(data_directory):
         logging.error(f"Directory not found: {data_directory}")
         return data_frames
-    
+
     for filename in os.listdir(data_directory):
         if filename.endswith('.json'):
             file_path = os.path.join(data_directory, filename)
@@ -225,21 +228,22 @@ def extract_local_data(data_directory: str) -> dict:
                     df = _process_json_data(data, filename)
                     if not df.empty:
                         data_frames[filename] = df
-                    
+
             except Exception as e:
                 logging.error(f"Error processing {filename}: {str(e)}")
-    
+
     return data_frames
+
 
 def extract_remote_data() -> dict:
     """Extract data from remote JSON source."""
     data_frames = {}
     data_source_path = CONFIG.get("data_source_path")
-    
+
     if not data_source_path:
         logging.error("No remote data source path configured")
         return data_frames
-    
+
     try:
         response = requests.get(data_source_path)
         if response.status_code == 200:
@@ -247,11 +251,12 @@ def extract_remote_data() -> dict:
             df = _process_json_data(data, "remote_data.json")
             if not df.empty:
                 data_frames["remote_data.json"] = df
-        
+
     except Exception as e:
         logging.error(f"Error fetching remote data: {str(e)}")
 
     return data_frames
+
 
 def extract() -> dict:
     """Extract data from the configured source."""
@@ -265,6 +270,7 @@ def extract() -> dict:
     else:
         logging.error(f"Unknown data source: {data_source}")
         return {}
+
 
 def transform(data_frames: dict) -> dict:
     """Transform the extracted data."""
@@ -310,6 +316,7 @@ def transform(data_frames: dict) -> dict:
                 continue
 
     return transformed_data
+
 
 def load(data: dict, output_prefix: str) -> str:
     """Load transformed data into CSV files."""
