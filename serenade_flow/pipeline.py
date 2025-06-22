@@ -71,6 +71,51 @@ SPORTS_EVENT_SCHEMA = {
 }
 
 
+def _validate_bookmaker(bookmaker: dict) -> bool:
+    """Validate a single bookmaker structure."""
+    if not isinstance(bookmaker, dict):
+        return False
+    if 'key' not in bookmaker or 'title' not in bookmaker:
+        return False
+    
+    markets = bookmaker.get('markets', [])
+    if not isinstance(markets, list):
+        return False
+    
+    for market in markets:
+        if not _validate_market(market):
+            return False
+    
+    return True
+
+
+def _validate_market(market: dict) -> bool:
+    """Validate a single market structure."""
+    if not isinstance(market, dict):
+        return False
+    if 'key' not in market or 'last_update' not in market:
+        return False
+    
+    outcomes = market.get('outcomes', [])
+    if not isinstance(outcomes, list):
+        return False
+    
+    for outcome in outcomes:
+        if not _validate_outcome(outcome):
+            return False
+    
+    return True
+
+
+def _validate_outcome(outcome: dict) -> bool:
+    """Validate a single outcome structure."""
+    if not isinstance(outcome, dict):
+        return False
+    if 'name' not in outcome or 'price' not in outcome:
+        return False
+    return True
+
+
 def validate_data(data: Dict[str, Any]) -> bool:
     """Validate the structure of the data."""
     try:
@@ -78,65 +123,28 @@ def validate_data(data: Dict[str, Any]) -> bool:
                           'away_team', 'commence_time', 'bookmakers']
 
         if not isinstance(data, dict):
-            logging.debug("Data is not a dictionary")
             return False
 
         # Check for required fields
         for field in required_fields:
-            if field not in data:
-                logging.debug(f"Missing required field: {field}")
-                return False
-            if data[field] is None:
-                logging.debug(f"Required field is None: {field}")
+            if field not in data or data[field] is None:
                 return False
 
         # Validate bookmakers structure
         bookmakers = data.get('bookmakers', [])
         if not isinstance(bookmakers, list):
-            logging.debug("Bookmakers is not a list")
             return False
 
         if not bookmakers:  # Empty bookmakers list is valid
             return True
 
         for bookmaker in bookmakers:
-            if not isinstance(bookmaker, dict):
-                logging.debug("Bookmaker is not a dictionary")
+            if not _validate_bookmaker(bookmaker):
                 return False
-            if 'key' not in bookmaker or 'title' not in bookmaker:
-                logging.debug("Bookmaker missing key or title")
-                return False
-
-            markets = bookmaker.get('markets', [])
-            if not isinstance(markets, list):
-                logging.debug("Markets is not a list")
-                return False
-
-            for market in markets:
-                if not isinstance(market, dict):
-                    logging.debug("Market is not a dictionary")
-                    return False
-                if 'key' not in market or 'last_update' not in market:
-                    logging.debug("Market missing key or last_update")
-                    return False
-
-                outcomes = market.get('outcomes', [])
-                if not isinstance(outcomes, list):
-                    logging.debug("Outcomes is not a list")
-                    return False
-
-                for outcome in outcomes:
-                    if not isinstance(outcome, dict):
-                        logging.debug("Outcome is not a dictionary")
-                        return False
-                    if 'name' not in outcome or 'price' not in outcome:
-                        logging.debug("Outcome missing name or price")
-                        return False
 
         return True
-
-    except Exception as e:
-        logging.debug(f"Validation error: {str(e)}")
+        
+    except Exception:
         return False
 
 
@@ -155,146 +163,91 @@ def configure(config: dict) -> dict:
     CONFIG.update(config)
     return CONFIG
 
+def _flatten_record(record: dict) -> list:
+    """Flatten a single record into multiple rows."""
+    flattened_records = []
+    for bookmaker in record.get('bookmakers', []):
+        for market in bookmaker.get('markets', []):
+            for outcome in market.get('outcomes', []):
+                flattened_record = {
+                    'id': record.get('id'),
+                    'sport_key': record.get('sport_key'),
+                    'sport_title': record.get('sport_title'),
+                    'commence_time': record.get('commence_time'),
+                    'home_team': record.get('home_team'),
+                    'away_team': record.get('away_team'),
+                    'bookmaker_key': bookmaker.get('key'),
+                    'bookmaker_title': bookmaker.get('title'),
+                    'market_key': market.get('key'),
+                    'market_last_update': market.get('last_update'),
+                    'outcome_name': outcome.get('name'),
+                    'outcome_price': outcome.get('price'),
+                    'outcome_point': outcome.get('point')
+                }
+                flattened_records.append(flattened_record)
+    return flattened_records
+
+
+def _process_json_data(data: Any, filename: str) -> pd.DataFrame:
+    """Process JSON data and return a DataFrame."""
+    if isinstance(data, list):
+        flattened_records = []
+        for record in data:
+            if validate_data(record):
+                flattened_records.extend(_flatten_record(record))
+        
+        if flattened_records:
+            return pd.DataFrame(flattened_records)
+    
+    elif isinstance(data, dict):
+        if validate_data(data):
+            flattened_records = _flatten_record(data)
+            if flattened_records:
+                return pd.DataFrame(flattened_records)
+    
+    return pd.DataFrame()
+
+
 def extract_local_data(data_directory: str) -> dict:
     """Extract data from local JSON files."""
     data_frames = {}
-
+    
     if not os.path.isdir(data_directory):
         logging.error(f"Directory not found: {data_directory}")
         return data_frames
-
+    
     for filename in os.listdir(data_directory):
         if filename.endswith('.json'):
             file_path = os.path.join(data_directory, filename)
             try:
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-
-                    if isinstance(data, list):
-                        flattened_records = []
-                        for record in data:
-                            if validate_data(record):
-                                for bookmaker in record.get('bookmakers', []):
-                                    for market in bookmaker.get('markets', []):
-                                        for outcome in market.get('outcomes', []):
-                                            flattened_record = {
-                                                'id': record.get('id'),
-                                                'sport_key': record.get('sport_key'),
-                                                'sport_title': record.get('sport_title'),
-                                                'commence_time': record.get('commence_time'),
-                                                'home_team': record.get('home_team'),
-                                                'away_team': record.get('away_team'),
-                                                'bookmaker_key': bookmaker.get('key'),
-                                                'bookmaker_title': bookmaker.get('title'),
-                                                'market_key': market.get('key'),
-                                                'market_last_update': market.get('last_update'),
-                                                'outcome_name': outcome.get('name'),
-                                                'outcome_price': outcome.get('price'),
-                                                'outcome_point': outcome.get('point')
-                                            }
-                                            flattened_records.append(flattened_record)
-
-                        if flattened_records:
-                            data_frames[filename] = pd.DataFrame(flattened_records)
-
-                    elif isinstance(data, dict):
-                        if validate_data(data):
-                            flattened_records = []
-                            for bookmaker in data.get('bookmakers', []):
-                                for market in bookmaker.get('markets', []):
-                                    for outcome in market.get('outcomes', []):
-                                        flattened_record = {
-                                            'id': data.get('id'),
-                                            'sport_key': data.get('sport_key'),
-                                            'sport_title': data.get('sport_title'),
-                                            'commence_time': data.get('commence_time'),
-                                            'home_team': data.get('home_team'),
-                                            'away_team': data.get('away_team'),
-                                            'bookmaker_key': bookmaker.get('key'),
-                                            'bookmaker_title': bookmaker.get('title'),
-                                            'market_key': market.get('key'),
-                                            'market_last_update': market.get('last_update'),
-                                            'outcome_name': outcome.get('name'),
-                                            'outcome_price': outcome.get('price'),
-                                            'outcome_point': outcome.get('point')
-                                        }
-                                        flattened_records.append(flattened_record)
-
-                            if flattened_records:
-                                data_frames[filename] = pd.DataFrame(flattened_records)
-
+                    df = _process_json_data(data, filename)
+                    if not df.empty:
+                        data_frames[filename] = df
+                    
             except Exception as e:
                 logging.error(f"Error processing {filename}: {str(e)}")
-
+    
     return data_frames
 
 def extract_remote_data() -> dict:
     """Extract data from remote JSON source."""
     data_frames = {}
     data_source_path = CONFIG.get("data_source_path")
-
+    
     if not data_source_path:
         logging.error("No remote data source path configured")
         return data_frames
-
+    
     try:
         response = requests.get(data_source_path)
         if response.status_code == 200:
             data = response.json()
-
-            if isinstance(data, list):
-                flattened_records = []
-                for record in data:
-                    if validate_data(record):
-                        for bookmaker in record.get('bookmakers', []):
-                            for market in bookmaker.get('markets', []):
-                                for outcome in market.get('outcomes', []):
-                                    flattened_record = {
-                                        'id': record.get('id'),
-                                        'sport_key': record.get('sport_key'),
-                                        'sport_title': record.get('sport_title'),
-                                        'commence_time': record.get('commence_time'),
-                                        'home_team': record.get('home_team'),
-                                        'away_team': record.get('away_team'),
-                                        'bookmaker_key': bookmaker.get('key'),
-                                        'bookmaker_title': bookmaker.get('title'),
-                                        'market_key': market.get('key'),
-                                        'market_last_update': market.get('last_update'),
-                                        'outcome_name': outcome.get('name'),
-                                        'outcome_price': outcome.get('price'),
-                                        'outcome_point': outcome.get('point')
-                                    }
-                                    flattened_records.append(flattened_record)
-
-                if flattened_records:
-                    data_frames["remote_data.json"] = pd.DataFrame(flattened_records)
-
-            elif isinstance(data, dict):
-                if validate_data(data):
-                    flattened_records = []
-                    for bookmaker in data.get('bookmakers', []):
-                        for market in bookmaker.get('markets', []):
-                            for outcome in market.get('outcomes', []):
-                                flattened_record = {
-                                    'id': data.get('id'),
-                                    'sport_key': data.get('sport_key'),
-                                    'sport_title': data.get('sport_title'),
-                                    'commence_time': data.get('commence_time'),
-                                    'home_team': data.get('home_team'),
-                                    'away_team': data.get('away_team'),
-                                    'bookmaker_key': bookmaker.get('key'),
-                                    'bookmaker_title': bookmaker.get('title'),
-                                    'market_key': market.get('key'),
-                                    'market_last_update': market.get('last_update'),
-                                    'outcome_name': outcome.get('name'),
-                                    'outcome_price': outcome.get('price'),
-                                    'outcome_point': outcome.get('point')
-                                }
-                                flattened_records.append(flattened_record)
-
-                    if flattened_records:
-                        data_frames["remote_data.json"] = pd.DataFrame(flattened_records)
-
+            df = _process_json_data(data, "remote_data.json")
+            if not df.empty:
+                data_frames["remote_data.json"] = df
+        
     except Exception as e:
         logging.error(f"Error fetching remote data: {str(e)}")
 
