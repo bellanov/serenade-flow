@@ -7,3 +7,5 @@ pytest
 requests
 python-dotenv
 twine
+google-cloud-storage
+google-cloud-firestore
