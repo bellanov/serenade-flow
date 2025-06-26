@@ -7,7 +7,6 @@ import json
 import logging
 import os
 import pandas as pd
-import requests
 from datetime import datetime, timezone
 from typing import Dict, Any
 from urllib.parse import urlparse
