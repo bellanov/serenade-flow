@@ -7,11 +7,9 @@ import json
 import logging
 import os
 import pandas as pd
+import requests
 from datetime import datetime, timezone
 from typing import Dict, Any
-from urllib.parse import urlparse
-from google.cloud import storage
-from google.cloud import firestore
 
 # Global configuration dictionary
 CONFIG = {}
@@ -238,38 +236,24 @@ def extract_local_data(data_directory: str) -> dict:
 
 
 def extract_remote_data() -> dict:
-    """Extract data from a remote GCS bucket."""
+    """Extract data from remote JSON source."""
     data_frames = {}
     data_source_path = CONFIG.get("data_source_path")
 
-    if not data_source_path or not data_source_path.startswith("gs://"):
-        logging.error("Invalid or missing GCS path in configuration. Path must start with 'gs://'.")
+    if not data_source_path:
+        logging.error("No remote data source path configured")
         return data_frames
 
     try:
-        # GOOGLE_APPLICATION_CREDENTIALS environment variable must be set
-        # for authentication.
-        storage_client = storage.Client()
-        parsed_url = urlparse(data_source_path)
-        bucket_name = parsed_url.netloc
-        prefix = parsed_url.path.lstrip('/')
-
-        bucket = storage_client.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=prefix)
-
-        for blob in blobs:
-            if blob.name.endswith(".json"):
-                try:
-                    data_str = blob.download_as_string()
-                    data = json.loads(data_str)
-                    df = _process_json_data(data, blob.name)
-                    if not df.empty:
-                        data_frames[os.path.basename(blob.name)] = df
-                except Exception as e:
-                    logging.error(f"Error processing blob {blob.name}: {str(e)}")
+        response = requests.get(data_source_path)
+        if response.status_code == 200:
+            data = response.json()
+            df = _process_json_data(data, "remote_data.json")
+            if not df.empty:
+                data_frames["remote_data.json"] = df
 
     except Exception as e:
-        logging.error(f"Error accessing GCS bucket: {str(e)}")
+        logging.error(f"Error fetching remote data: {str(e)}")
 
     return data_frames
 
@@ -334,55 +318,14 @@ def transform(data_frames: dict) -> dict:
     return transformed_data
 
 
-def _load_to_firestore(data: dict):
-    """Load data into a Firestore collection."""
-    project_id = CONFIG.get("project_id")
-    db = firestore.Client(project=project_id)
-    
-    collection_name = CONFIG.get("collection_name", "sports_events")
-    collection_ref = db.collection(collection_name)
-
-    all_data = pd.concat(data.values(), ignore_index=True)
-    
-    # Convert DataFrame to a list of dictionaries
-    records = all_data.to_dict('records')
-
-    for record in records:
-        # Use the 'id' field as the document ID in Firestore
-        doc_id = record.get("id")
-        if doc_id:
-            doc_ref = collection_ref.document(doc_id)
-            doc_ref.set(record)
-        else:
-            logging.warning("Record missing 'id' field, skipping.")
-
-    logging.info(f"Data successfully loaded to Firestore collection: {collection_name}")
-
-
 def load(data: dict, output_prefix: str) -> str:
-    """Load the transformed data to the configured destination."""
-    load_destination = CONFIG.get("load_destination", "local_csv")
-
-    if load_destination == "firestore":
-        _load_to_firestore(data)
-        return f"Loaded to Firestore collection: {CONFIG.get('collection_name', 'sports_events')}"
-
-    elif load_destination == "local_csv":
-        output_dir = CONFIG.get("output_directory", "output")
-        os.makedirs(output_dir, exist_ok=True)
-
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        output_path = os.path.join(output_dir, f"{output_prefix}_{timestamp}.csv")
-
-        # Concatenate all dataframes into one
-        if data.values():
-            all_data = pd.concat(data.values(), ignore_index=True)
-            all_data.to_csv(output_path, index=False)
-            logging.info(f"Data successfully loaded to {output_path}")
-            return output_path
-        else:
-            logging.warning("No data to load.")
-            return "No data to load."
-
-    else:
-        raise ValueError(f"Unknown load_destination: {load_destination}")
+    """Load transformed data into CSV files."""
+    try:
+        for key, df in data.items():
+            output_file = f"{output_prefix}_{key.replace('.json', '.csv')}"
+            df.to_csv(output_file, index=False)
+            logging.info(f"Data saved to {output_file}")
+        return "Data loaded successfully"
+    except Exception as e:
+        logging.error(f"Error loading data: {str(e)}")
+        return None

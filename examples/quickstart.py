@@ -9,16 +9,15 @@ print("\nExecuting Quickstart Example\n")
 #
 # To use the remote data source, you need to:
 # 1. Set the `data_source` to "remote".
-# 2. Provide the GCS path to your data in `data_source_path`.
-# 3. Ensure you have authenticated with GCP. For example, by setting
-#    the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+# 2. Provide a public HTTP(S) URL to your data in `data_source_path`.
+#    (e.g., a public GCS bucket file link, not a gs:// path)
+# 3. No authentication or credentials are required for public data.
+#
+# Note: Firestore integration will be supported via HTTP API in the future.
 pipeline.configure({
     "data_source": "remote",
-    "data_source_path": "gs://your-bucket-name/df/",
-    "data_format": "json",
-    "load_destination": "firestore",
-    "project_id": "your-gcp-project-id",
-    "collection_name": "sports_events_test"
+    "data_source_path": "https://storage.googleapis.com/your-public-bucket/df/Events_NBA.json",
+    "data_format": "json"
 })
 
 # Extract

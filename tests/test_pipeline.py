@@ -5,7 +5,6 @@ import pandas as pd
 import json
 from serenade_flow.pipeline import extract_local_data, transform, load
 from unittest.mock import patch
-import os
 
 from serenade_flow import pipeline
 
@@ -36,9 +35,6 @@ def test_extract_local(sample_data_directory):
 @pytest.mark.unit
 def test_extract_remote():
     """Test Remote Extraction."""
-    # Skip this test if not running in a GCP environment
-    if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        pytest.skip("Skipping remote extraction test: not running in a GCP environment.")
     # Mock data that we expect from the remote API
     mock_response_data = [
         {
@@ -139,9 +135,8 @@ def test_load(sample_data_directory):
     print(data)  # Add this line to inspect the data structure
 
     # Load the data and check for success message
-    result = pipeline.load(data, "output")
-    assert result.endswith('.csv')
-    assert os.path.exists(result)
+    # Check for success message
+    assert pipeline.load(data, "output") == "Data loaded successfully"
 
 
 @pytest.fixture
@@ -238,18 +233,14 @@ def test_load_data(sample_data_directory, tmp_path):
     """Test the loading of transformed data into CSV files."""
     data_frames = extract_local_data(sample_data_directory)
     transformed_data = transform(data_frames)
-    result = load(transformed_data, str(tmp_path / "processed_data"))
-    # Check if a CSV file with the correct prefix was created
-    assert result.endswith('.csv')
-    assert os.path.exists(result)
+    load(transformed_data, str(tmp_path / "processed_data"))
+    # Check if file was created
+    assert (tmp_path / "processed_data_Events_NBA.csv").exists()
 
 
 @pytest.mark.unit
 def test_remote_load():
     """Test Loading Remote Data."""
-    # Skip this test if not running in a GCP environment
-    if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        pytest.skip("Skipping remote load test: not running in a GCP environment.")
     # Similar mock setup as above
     mock_response_data = [
         {
