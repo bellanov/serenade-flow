@@ -50,26 +50,60 @@ class BatchProcessor:
         self.processing_history = []
         self.quality_reports = []
 
+    def _extract_dataframe(self, data: Dict[str, Any]) -> Any:
+        """Extract DataFrame from data dictionary."""
+        if not data:
+            return None
+        for key, value in data.items():
+            if hasattr(value, 'shape') and value.shape[0] > 0:
+                return value
+        return None
+
+    def _analyze_data_types(self, df: Any) -> Dict[str, str]:
+        """Analyze data types of DataFrame columns."""
+        data_types = {}
+        for col in df.columns:
+            if df[col].dtype == 'object':
+                data_types[col] = 'string'
+            elif 'int' in str(df[col].dtype):
+                data_types[col] = 'integer'
+            elif 'float' in str(df[col].dtype):
+                data_types[col] = 'float'
+            else:
+                data_types[col] = str(df[col].dtype)
+        return data_types
+
+    def _calculate_quality_score(
+        self, record_count: int, column_count: int,
+        missing_values: int, duplicate_records: int
+    ) -> tuple[float, List[str]]:
+        """Calculate quality score and identify issues."""
+        quality_score = 100.0
+        issues = []
+
+        if missing_values > 0:
+            missing_rate = missing_values / (record_count * column_count)
+            quality_score -= missing_rate * 30
+            issues.append(f"Missing values: {missing_values}")
+
+        if duplicate_records > 0:
+            duplicate_rate = duplicate_records / record_count
+            quality_score -= duplicate_rate * 20
+            issues.append(f"Duplicate records: {duplicate_records}")
+
+        if record_count == 0:
+            quality_score = 0
+            issues.append("No records found")
+
+        quality_score = max(0, quality_score)
+        return quality_score, issues
+
     def assess_data_quality(
         self, data: Dict[str, Any], file_path: str
     ) -> DataQualityReport:
         """Assess data quality of extracted data."""
-        if not data:
-            return DataQualityReport(
-                file_path=file_path,
-                record_count=0,
-                column_count=0,
-                missing_values=0,
-                duplicate_records=0,
-                data_types={},
-                quality_score=0.0,
-                issues=["No data extracted"]
-            )
-        df = None
-        for key, value in data.items():
-            if hasattr(value, 'shape') and value.shape[0] > 0:
-                df = value
-                break
+        df = self._extract_dataframe(data)
+
         if df is None:
             return DataQualityReport(
                 file_path=file_path,
@@ -81,34 +115,16 @@ class BatchProcessor:
                 quality_score=0.0,
                 issues=["No valid DataFrame found"]
             )
+
         record_count = len(df)
         column_count = len(df.columns)
         missing_values = df.isnull().sum().sum()
         duplicate_records = len(df) - len(df.drop_duplicates())
-        data_types = {}
-        for col in df.columns:
-            if df[col].dtype == 'object':
-                data_types[col] = 'string'
-            elif 'int' in str(df[col].dtype):
-                data_types[col] = 'integer'
-            elif 'float' in str(df[col].dtype):
-                data_types[col] = 'float'
-            else:
-                data_types[col] = str(df[col].dtype)
-        quality_score = 100.0
-        issues = []
-        if missing_values > 0:
-            missing_rate = missing_values / (record_count * column_count)
-            quality_score -= missing_rate * 30
-            issues.append(f"Missing values: {missing_values}")
-        if duplicate_records > 0:
-            duplicate_rate = duplicate_records / record_count
-            quality_score -= duplicate_rate * 20
-            issues.append(f"Duplicate records: {duplicate_records}")
-        if record_count == 0:
-            quality_score = 0
-            issues.append("No records found")
-        quality_score = max(0, quality_score)
+        data_types = self._analyze_data_types(df)
+        quality_score, issues = self._calculate_quality_score(
+            record_count, column_count, missing_values, duplicate_records
+        )
+
         return DataQualityReport(
             file_path=file_path,
             record_count=record_count,
