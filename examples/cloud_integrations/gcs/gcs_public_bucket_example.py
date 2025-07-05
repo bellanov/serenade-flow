@@ -109,7 +109,7 @@ class GCSDataExtractor:
         total_records = 0
         successful_extractions = 0
         for file_path in file_paths:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             result = self.extract_with_retry(file_path)
             results[file_path] = result
             self.extraction_history.append(result)
@@ -125,7 +125,7 @@ class GCSDataExtractor:
                         )
             else:
                 print(f"💥 Failed to extract {file_path}: {result.error_message}")
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("📈 EXTRACTION SUMMARY")
         print(f"   Files processed: {len(file_paths)}")
         print(f"   Successful: {successful_extractions}")

@@ -16,7 +16,10 @@ print("\nExecuting Quickstart Example\n")
 # Note: Firestore integration will be supported via HTTP API in the future.
 pipeline.configure({
     "data_source": "remote",
-    "data_source_path": "https://storage.googleapis.com/odds-data-samples-4vuoq93m/odds/event_96395d8faab66cf7b72830844f66eda7.json",
+    "data_source_path": (
+        "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
+        "odds/event_96395d8faab66cf7b72830844f66eda7.json"
+    ),
     "data_format": "json"
 })
 

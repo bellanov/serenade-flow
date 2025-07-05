@@ -172,7 +172,7 @@ class BatchProcessor:
         start_time = time.time()
         results = []
         for i, file_path in enumerate(file_paths):
-            print(f"\n📁 File {i+1}/{len(file_paths)}")
+            print(f"\n📁 File {i + 1}/{len(file_paths)}")
             result = self.process_file_with_analytics(file_path)
             results.append(result)
             if i < len(file_paths) - 1:
@@ -202,9 +202,9 @@ class BatchProcessor:
 
     def _print_analytics_summary(self, metrics: ProcessingMetrics, results: List[Dict]):
         """Print comprehensive analytics summary."""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("📈 ANALYTICS SUMMARY")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
         print("📊 Processing Metrics:")
         print(f"   • Total Files: {metrics.total_files}")
         print(f"   • Successful: {metrics.successful_files}")
