@@ -6,10 +6,21 @@ from serenade_flow import pipeline
 print("\nExecuting Quickstart Example\n")
 
 # Configure ETL Pipeline
+#
+# To use the remote data source, you need to:
+# 1. Set the `data_source` to "remote".
+# 2. Provide a public HTTP(S) URL to your data in `data_source_path`.
+#    (e.g., a public GCS bucket file link, not a gs:// path)
+# 3. No authentication or credentials are required for public data.
+#
+# Note: Firestore integration will be supported via HTTP API in the future.
 pipeline.configure({
-    "data_source": "local",
-    "data_source_path": "/path/to/directory",
-    "data_format": "csv"
+    "data_source": "remote",
+    "data_source_path": (
+        "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
+        "odds/event_96395d8faab66cf7b72830844f66eda7.json"
+    ),
+    "data_format": "json"
 })
 
 # Extract
