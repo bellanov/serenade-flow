@@ -259,32 +259,52 @@ class BatchProcessor:
 BUCKET_BASE_URL = "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
 
 
-# Define file categories and their prefixes
-CATEGORIES = {
-    "odds": [
-        "odds/event_96395d8faab66cf7b72830844f66eda7.json",
-        "odds/event_968d201306e35699b83b5bb24289914c.json",
-        "odds/event_96a3cf0917accb689197ad21378e1efb.json",
-        "odds/event_96c692dc5328fc7fdc499c6a211c5844.json",
-        "odds/event_96ce7785b0980b03282c7e10d4c58d4a.json"
-    ]
-}
+# --- NEW: Utility to list all odds files by format ---
+def get_all_odds_files_by_format():
+    """Return a dict mapping odds format to list of file paths (relative to bucket root)."""
+    # In production, you would list files from the bucket using an API or manifest.
+    # For this example, we simulate with static lists (update as needed).
+    return {
+        "american": [
+            "odds/american/event_008740fcf1af65b0cc9e79.json",
+            "odds/american/event_0089bc8773d8ce4ce20f9df90723cac9.json",
+            # ... add more as needed ...
+        ],
+        "decimal": [
+            "odds/decimal/event_0089bc8773d8ce4ce20f9df90723cac9.json",
+            # ... add more as needed ...
+        ]
+    }
+
+
+# --- REPLACE CATEGORIES with new odds file discovery ---
+odds_files_by_format = get_all_odds_files_by_format()
+
+# Flatten for batch processing, tagging each with its format
+def get_tagged_odds_file_list():
+    tagged = []
+    for odds_format, file_list in odds_files_by_format.items():
+        for file_path in file_list:
+            tagged.append({"file_path": file_path, "odds_format": odds_format})
+    return tagged
 
 
 def demonstrate_batch_processing():
-    """Demonstrate batch processing with analytics."""
-    print("\n🎯 Batch Processing with SerenadeFlow")
+    """Demonstrate batch processing with analytics for both odds formats."""
+    print("\n🎯 Batch Processing with SerenadeFlow (American & Decimal Odds)")
     print("=" * 70)
     processor = BatchProcessor(
         bucket_url=BUCKET_BASE_URL,
         max_concurrent=3
     )
+    tagged_files = get_tagged_odds_file_list()
     all_metrics = {}
-    for category_name, file_paths in CATEGORIES.items():
-        print(f"\n🎯 Processing {category_name.upper()} Category")
+    for odds_format in odds_files_by_format:
+        format_files = [f["file_path"] for f in tagged_files if f["odds_format"] == odds_format]
+        print(f"\n🎯 Processing {odds_format.upper()} Odds Format")
         print("-" * 50)
-        metrics = processor.process_batch_with_analytics(file_paths)
-        all_metrics[category_name] = metrics
+        metrics = processor.process_batch_with_analytics(format_files)
+        all_metrics[odds_format] = metrics
     print("\n🏆 OVERALL PERFORMANCE SUMMARY")
     print("=" * 70)
     total_files = sum(m.total_files for m in all_metrics.values())
