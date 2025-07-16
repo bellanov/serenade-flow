@@ -141,7 +141,7 @@ class GCSDataExtractor:
 # Public GCS bucket base URL
 BUCKET_BASE_URL = "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
 
-# --- NEW: Utility to list all odds files by format ---
+
 def get_all_odds_files_by_format():
     """Return a dict mapping odds format to list of file paths (relative to bucket root)."""
     # In production, you would list files from the bucket using an API or manifest.
@@ -158,8 +158,9 @@ def get_all_odds_files_by_format():
         ]
     }
 
-# --- REPLACE EVENT_FILES with new odds file discovery ---
+
 odds_files_by_format = get_all_odds_files_by_format()
+
 
 def get_tagged_odds_file_list():
     tagged = []
@@ -169,7 +170,6 @@ def get_tagged_odds_file_list():
     return tagged
 
 
-# --- UPDATE demonstrate_extraction to process both formats ---
 def demonstrate_extraction():
     """Demonstrate extraction capabilities for both odds formats."""
     print("\n🎯 GCS Data Extraction with SerenadeFlow (American & Decimal Odds)")
