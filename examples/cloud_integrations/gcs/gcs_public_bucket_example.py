@@ -141,35 +141,57 @@ class GCSDataExtractor:
 # Public GCS bucket base URL
 BUCKET_BASE_URL = "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
 
-# Example files from the organized bucket structure
-EVENT_FILES = [
-    "odds/event_96395d8faab66cf7b72830844f66eda7.json",
-    "odds/event_968d201306e35699b83b5bb24289914c.json",
-    "odds/event_96a3cf0917accb689197ad21378e1efb.json"
-]
+
+def get_all_odds_files_by_format():
+    """Return a dict mapping odds format to list of file paths (relative to bucket root)."""
+    # In production, you would list files from the bucket using an API or manifest.
+    # For this example, we simulate with static lists (update as needed).
+    return {
+        "american": [
+            "odds/american/event_008740fcf1af65b0cc9e79.json",
+            "odds/american/event_0089bc8773d8ce4ce20f9df90723cac9.json",
+            # ... add more as needed ...
+        ],
+        "decimal": [
+            "odds/decimal/event_0089bc8773d8ce4ce20f9df90723cac9.json",
+            # ... add more as needed ...
+        ]
+    }
+
+
+odds_files_by_format = get_all_odds_files_by_format()
+
+
+def get_tagged_odds_file_list():
+    tagged = []
+    for odds_format, file_list in odds_files_by_format.items():
+        for file_path in file_list:
+            tagged.append({"file_path": file_path, "odds_format": odds_format})
+    return tagged
 
 
 def demonstrate_extraction():
-    """Demonstrate extraction capabilities."""
-    print("\n🎯 GCS Data Extraction with SerenadeFlow")
+    """Demonstrate extraction capabilities for both odds formats."""
+    print("\n🎯 GCS Data Extraction with SerenadeFlow (American & Decimal Odds)")
     print("=" * 60)
     extractor = GCSDataExtractor(
         bucket_url=BUCKET_BASE_URL,
         max_retries=3,
         retry_delay=1.5
     )
-    results = extractor.process_event_files(EVENT_FILES)
-    print("\n🔍 DATA ANALYSIS")
-    successful_results = [r for r in results.values() if r.success]
-    if successful_results:
-        avg_records = (
-            sum(r.record_count for r in successful_results) / len(successful_results)
-        )
-
-        print(f"   Average records per file: {avg_records:.1f}")
-        total_time = sum(r.extraction_time for r in results.values())
-        print(f"   Total processing time: {total_time:.2f}s")
-    return results
+    tagged_files = get_tagged_odds_file_list()
+    all_results = {}
+    for odds_format in odds_files_by_format:
+        format_files = [f["file_path"] for f in tagged_files if f["odds_format"] == odds_format]
+        print(f"\n🎯 Extracting {odds_format.upper()} Odds Format")
+        print("-" * 50)
+        results = extractor.process_event_files(format_files)
+        all_results[odds_format] = results
+    print("\n🔍 EXTRACTION SUMMARY BY FORMAT")
+    for odds_format, results in all_results.items():
+        successful = sum(1 for r in results.values() if r.success)
+        print(f"   {odds_format.upper()}: {successful}/{len(results)} files succeeded")
+    return all_results
 
 
 if __name__ == "__main__":
