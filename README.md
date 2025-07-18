@@ -45,3 +45,33 @@ Example `config.json` for remote data:
     "data_format": "json"
 }
 ```
+
+## Plugin System
+
+SerenadeFlow now supports a robust plugin system for custom extract, transform, and load steps.
+
+### Using a Community Plugin
+
+To use the GCS Data Extractor plugin:
+
+```python
+from serenade_flow.plugins import PluginRegistry
+
+config = {
+    "plugins": {
+        "gcs_data_extractor": {
+            "module": "serenade_flow.community.gcs_data_extractor_plugin",
+            "class": "GCSDataExtractorPlugin",
+            "enabled": True
+        }
+    }
+}
+pipeline.configure(config)
+plugin = pipeline.PLUGIN_REGISTRY.get("gcs_data_extractor")
+plugin.configure(bucket_url="https://storage.googleapis.com/odds-data-samples-4vuoq93m/")
+result = plugin.extract_with_retry("odds/american/event_008740fcf1af65b0cc9e79.json")
+```
+
+### Contributing Plugins
+
+See `serenade_flow/community/PLUGIN_TEMPLATE.md` for how to document and contribute your own plugins.

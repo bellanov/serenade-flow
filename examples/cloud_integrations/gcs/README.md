@@ -1,3 +1,6 @@
+> **Note:**
+> These examples demonstrate advanced usage, prototyping, and custom workflows for GCS extraction and batch processing. Core GCS extraction and data quality logic are now integrated into the main pipeline and available as plugins. Use these examples for learning, inspiration, or building more complex workflows.
+
 # Google Cloud Storage (GCS) Integration Examples
 
 This directory contains examples for integrating SerenadeFlow with Google Cloud Storage, demonstrating how to extract data from public GCS buckets with organized data structures.
