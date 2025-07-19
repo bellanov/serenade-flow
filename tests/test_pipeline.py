@@ -13,11 +13,13 @@ from serenade_flow import pipeline
 def test_extract_local(sample_data_directory):
     """Test Local Extraction."""
     # Configure the pipeline to use local data
-    pipeline.configure({
-        "data_source": "local",
-        "data_source_path": sample_data_directory,
-        "data_format": "json"
-    })
+    pipeline.configure(
+        {
+            "data_source": "local",
+            "data_source_path": sample_data_directory,
+            "data_format": "json",
+        }
+    )
 
     # Extract data
     data = pipeline.extract()
@@ -27,9 +29,9 @@ def test_extract_local(sample_data_directory):
     assert isinstance(data, dict)  # Ensure the data is a dictionary
     # Ensure all values are DataFrames
     assert all(isinstance(df, pd.DataFrame) for df in data.values())
-    assert 'outcome_name' in data["Events_NBA.json"].columns
-    assert 'outcome_price' in data["Events_NBA.json"].columns
-    assert 'outcome_point' in data["Events_NBA.json"].columns
+    assert "outcome_name" in data["Events_NBA.json"].columns
+    assert "outcome_price" in data["Events_NBA.json"].columns
+    assert "outcome_point" in data["Events_NBA.json"].columns
 
 
 @pytest.mark.unit
@@ -54,12 +56,12 @@ def test_extract_remote():
                             "last_update": "2025-02-04T00:05:00Z",
                             "outcomes": [
                                 {"name": "Team A", "price": 1.5},
-                                {"name": "Team B", "price": 2.5}
-                            ]
+                                {"name": "Team B", "price": 2.5},
+                            ],
                         }
-                    ]
+                    ],
                 }
-            ]
+            ],
         },
         {
             "id": "2",
@@ -78,13 +80,13 @@ def test_extract_remote():
                             "last_update": "2025-02-04T00:15:00Z",
                             "outcomes": [
                                 {"name": "Team C", "price": 1.2},
-                                {"name": "Team D", "price": 3.0}
-                            ]
+                                {"name": "Team D", "price": 3.0},
+                            ],
                         }
-                    ]
+                    ],
                 }
-            ]
-        }
+            ],
+        },
     ]
 
     # Create a mock response object
@@ -96,12 +98,14 @@ def test_extract_remote():
             return mock_response_data
 
     # Mock the requests.get call
-    with patch('requests.get', return_value=MockResponse()):
-        pipeline.configure({
-            "data_source": "remote",
-            "data_source_path": "http://remote-api-endpoint/data",
-            "data_format": "json"
-        })
+    with patch("requests.get", return_value=MockResponse()):
+        pipeline.configure(
+            {
+                "data_source": "remote",
+                "data_source_path": "http://remote-api-endpoint/data",
+                "data_format": "json",
+            }
+        )
 
         data = pipeline.extract()
         assert isinstance(data, dict)
@@ -111,22 +115,24 @@ def test_extract_remote():
         # Expected 2 records * 2 outcomes per record = 4 flattened records
         assert len(data["remote_data.json"]) == 4
         df = data["remote_data.json"]
-        assert 'bookmaker_key' in df.columns
-        assert 'market_key' in df.columns
-        assert 'outcome_name' in df.columns
-        assert 'outcome_price' in df.columns
-        assert 'outcome_point' in df.columns
+        assert "bookmaker_key" in df.columns
+        assert "market_key" in df.columns
+        assert "outcome_name" in df.columns
+        assert "outcome_price" in df.columns
+        assert "outcome_point" in df.columns
 
 
 @pytest.mark.unit
 def test_load(sample_data_directory):
     """Test Loading Data."""
     # Configure the pipeline to use local data
-    pipeline.configure({
-        "data_source": "local",
-        "data_source_path": sample_data_directory,
-        "data_format": "json"
-    })
+    pipeline.configure(
+        {
+            "data_source": "local",
+            "data_source_path": sample_data_directory,
+            "data_format": "json",
+        }
+    )
 
     # Extract data
     data = pipeline.extract()
@@ -160,12 +166,12 @@ def sample_data_directory(tmp_path):
                             "last_update": "2025-02-04T00:05:00Z",
                             "outcomes": [
                                 {"name": "team a", "price": 1.5},
-                                {"name": "team b", "price": 2.5}
-                            ]
+                                {"name": "team b", "price": 2.5},
+                            ],
                         }
-                    ]
+                    ],
                 }
-            ]
+            ],
         },
         {
             "id": "2",
@@ -184,13 +190,13 @@ def sample_data_directory(tmp_path):
                             "last_update": "2025-02-04T00:15:00Z",
                             "outcomes": [
                                 {"name": "team c", "price": 1.2},
-                                {"name": "team d", "price": 3.0}
-                            ]
+                                {"name": "team d", "price": 3.0},
+                            ],
                         }
-                    ]
+                    ],
                 }
-            ]
-        }
+            ],
+        },
     ]
     json_file = tmp_path / "Events_NBA.json"
     json_file.write_text(json.dumps(data))
@@ -206,11 +212,11 @@ def test_extract_local_data(sample_data_directory):
     # Each original record has 2 outcomes, so 2*2=4 flattened records
     assert len(data_frames["Events_NBA.json"]) == 4
     df = data_frames["Events_NBA.json"]
-    assert 'bookmaker_key' in df.columns
-    assert 'market_key' in df.columns
-    assert 'outcome_name' in df.columns
-    assert 'outcome_price' in df.columns
-    assert 'outcome_point' in df.columns
+    assert "bookmaker_key" in df.columns
+    assert "market_key" in df.columns
+    assert "outcome_name" in df.columns
+    assert "outcome_price" in df.columns
+    assert "outcome_point" in df.columns
 
 
 @pytest.mark.unit
@@ -223,9 +229,13 @@ def test_transform_data(sample_data_directory):
     # Check datetime conversion
     assert pd.to_datetime(transformed_data["Events_NBA.json"]["commence_time"].iloc[0])
     # Check market_last_update datetime conversion
-    assert pd.to_datetime(transformed_data["Events_NBA.json"]["market_last_update"].iloc[0])
+    assert pd.to_datetime(
+        transformed_data["Events_NBA.json"]["market_last_update"].iloc[0]
+    )
     # Check outcome_point is numeric
-    assert pd.api.types.is_numeric_dtype(transformed_data["Events_NBA.json"]["outcome_point"])
+    assert pd.api.types.is_numeric_dtype(
+        transformed_data["Events_NBA.json"]["outcome_point"]
+    )
 
 
 @pytest.mark.unit
@@ -260,12 +270,12 @@ def test_remote_load():
                             "last_update": "2025-02-04T00:05:00Z",
                             "outcomes": [
                                 {"name": "Team A", "price": 1.5},
-                                {"name": "Team B", "price": 2.5}
-                            ]
+                                {"name": "Team B", "price": 2.5},
+                            ],
                         }
-                    ]
+                    ],
                 }
-            ]
+            ],
         }
     ]
 
@@ -276,12 +286,14 @@ def test_remote_load():
         def json(self):
             return mock_response_data
 
-    with patch('requests.get', return_value=MockResponse()):
-        pipeline.configure({
-            "data_source": "remote",
-            "data_source_path": "http://remote-api-endpoint/data",
-            "data_format": "json"
-        })
+    with patch("requests.get", return_value=MockResponse()):
+        pipeline.configure(
+            {
+                "data_source": "remote",
+                "data_source_path": "http://remote-api-endpoint/data",
+                "data_format": "json",
+            }
+        )
 
         data = pipeline.extract()
         assert isinstance(data, dict)
@@ -296,7 +308,7 @@ def test_extract_empty_file(tmp_path):
     empty_file.write_text("")
     data_frames = extract_local_data(str(tmp_path))
     # Should not raise, and should not include the empty file
-    assert "Empty.json" not in data_frames or data_frames["Empty.json"].empty
+    assert ("Empty.json" not in data_frames or data_frames["Empty.json"].empty)
 
 
 @pytest.mark.unit
@@ -307,21 +319,21 @@ def test_extract_malformed_json(tmp_path, caplog):
     with caplog.at_level("ERROR"):
         data_frames = extract_local_data(str(tmp_path))
     # Should not raise, and should not include the malformed file
-    assert "Malformed.json" not in data_frames or data_frames["Malformed.json"].empty
-    assert any("Error processing Malformed.json" in msg for msg in caplog.text.splitlines())
+    assert ("Malformed.json" not in data_frames or data_frames["Malformed.json"].empty)
+    assert any(
+        "Error processing Malformed.json" in msg for msg in caplog.text.splitlines()
+    )
 
 
 @pytest.mark.unit
 def test_extract_missing_fields(tmp_path):
     """Test extraction from a file with missing required fields."""
-    data = [
-        {"id": "1", "sport_key": "basketball_nba"}  # Missing most required fields
-    ]
+    data = [{"id": "1", "sport_key": "basketball_nba"}]  # Missing most required fields
     file = tmp_path / "MissingFields.json"
     file.write_text(json.dumps(data))
     data_frames = extract_local_data(str(tmp_path))
     # Should not raise, and should not include any valid records
-    assert "MissingFields.json" not in data_frames or data_frames["MissingFields.json"].empty
+    assert ("MissingFields.json" not in data_frames or data_frames["MissingFields.json"].empty)
 
 
 @pytest.mark.unit
@@ -335,11 +347,235 @@ def test_extract_invalid_types(tmp_path):
             "home_team": "Team A",
             "away_team": "Team B",
             "commence_time": "2025-02-04T00:10:00Z",
-            "bookmakers": "not_a_list"
+            "bookmakers": "not_a_list",
         }
     ]
     file = tmp_path / "InvalidTypes.json"
     file.write_text(json.dumps(data))
     data_frames = extract_local_data(str(tmp_path))
     # Should not raise, and should not include any valid records
-    assert "InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty
+    assert ("InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty)
+
+
+@pytest.mark.unit
+def test_validate_outcome_negative():
+    from serenade_flow.pipeline import _validate_outcome
+
+    # Not a dict
+    assert not _validate_outcome(["not", "a", "dict"])
+    # Missing keys
+    assert not _validate_outcome({"name": "A"})
+    assert not _validate_outcome({"price": 1.5})
+    # Empty dict
+    assert not _validate_outcome({})
+
+
+@pytest.mark.unit
+def test_validate_market_negative():
+    from serenade_flow.pipeline import _validate_market
+
+    # Not a dict
+    assert not _validate_market(["not", "a", "dict"])
+    # Missing keys
+    assert not _validate_market({"key": "h2h"})
+    assert not _validate_market({"last_update": "2025-01-01"})
+    # Outcomes not a list
+    assert not _validate_market(
+        {"key": "h2h", "last_update": "2025-01-01", "outcomes": "notalist"}
+    )
+    # Nested invalid outcome
+    assert not _validate_market(
+        {"key": "h2h", "last_update": "2025-01-01", "outcomes": [{"name": "A"}]}
+    )
+
+
+@pytest.mark.unit
+def test_validate_bookmaker_negative():
+    from serenade_flow.pipeline import _validate_bookmaker
+
+    # Not a dict
+    assert not _validate_bookmaker(["not", "a", "dict"])
+    # Missing keys
+    assert not _validate_bookmaker({"key": "bk1"})
+    assert not _validate_bookmaker({"title": "Bookmaker 1"})
+    # Markets not a list
+    assert not _validate_bookmaker(
+        {"key": "bk1", "title": "Bookmaker 1", "markets": "notalist"}
+    )
+    # Nested invalid market
+    assert not _validate_bookmaker(
+        {"key": "bk1", "title": "Bookmaker 1", "markets": [{"key": "h2h"}]}
+    )
+
+
+@pytest.mark.unit
+def test_validate_data_negative():
+    from serenade_flow.pipeline import validate_data
+
+    # Not a dict
+    assert not validate_data(["not", "a", "dict"])
+    # Missing required fields
+    assert not validate_data({"id": "1"})
+    # Bookmakers not a list
+    base = {
+        "id": "1",
+        "sport_key": "nba",
+        "sport_title": "NBA",
+        "home_team": "A",
+        "away_team": "B",
+        "commence_time": "2025",
+        "bookmakers": "notalist",
+    }
+    assert not validate_data(base)
+    # Bookmakers list with invalid bookmaker
+    base["bookmakers"] = ["notadict"]
+    assert not validate_data(base)
+    # Bookmakers list with invalid nested structure
+    base["bookmakers"] = [{"key": "bk1"}]
+    assert not validate_data(base)
+
+    # Exception path: pass object that raises in __getitem__
+    class BadDict(dict):
+        def __getitem__(self, key):
+            raise Exception("fail")
+
+    assert not validate_data(BadDict())
+
+
+@pytest.mark.unit
+def test_transform_datetime_error(caplog):
+    from serenade_flow.pipeline import transform_datetime
+
+    with caplog.at_level("ERROR"):
+        with pytest.raises(Exception):
+            transform_datetime("not-a-date")
+    assert any("Error parsing datetime" in msg for msg in caplog.text.splitlines())
+
+
+@pytest.mark.unit
+def test_configure_updates_and_returns():
+    from serenade_flow.pipeline import configure, CONFIG
+
+    # Save original config
+    orig = CONFIG.copy()
+    new_conf = {"data_source": "test", "foo": "bar"}
+    result = configure(new_conf)
+    for k, v in new_conf.items():
+        assert result[k] == v
+        assert CONFIG[k] == v
+    # Restore original config
+    CONFIG.clear()
+    CONFIG.update(orig)
+
+
+@pytest.mark.unit
+def test_flatten_record_edge_cases():
+    from serenade_flow.pipeline import _flatten_record
+
+    # Empty bookmakers
+    record = {"bookmakers": []}
+    assert _flatten_record(record) == []
+    # Bookmaker with missing markets
+    record = {"bookmakers": [{"key": "bk1", "title": "B1"}]}
+    assert _flatten_record(record) == []
+    # Market with missing outcomes
+    record = {
+        "bookmakers": [
+            {
+                "key": "bk1",
+                "title": "B1",
+                "markets": [{"key": "m1", "last_update": "now"}],
+            }
+        ]
+    }
+    assert _flatten_record(record) == []
+    # Outcome with missing fields (should still include, but with None)
+    record = {
+        "id": "1",
+        "sport_key": "nba",
+        "sport_title": "NBA",
+        "commence_time": "now",
+        "home_team": "A",
+        "away_team": "B",
+        "bookmakers": [
+            {
+                "key": "bk1",
+                "title": "B1",
+                "markets": [{"key": "m1", "last_update": "now", "outcomes": [{}]}],
+            }
+        ],
+    }
+    rows = _flatten_record(record)
+    assert len(rows) == 1
+    assert rows[0]["outcome_name"] is None and rows[0]["outcome_price"] is None
+
+
+# E306: Add blank lines before nested definitions
+
+
+@pytest.mark.unit
+def test_transform_missing_columns(caplog):
+    from serenade_flow.pipeline import transform
+    import pandas as pd
+
+    # DataFrame missing required columns
+    df = pd.DataFrame({"foo": [1], "bar": [2]})
+    data_frames = {"file.json": df}
+    with caplog.at_level("WARNING"):
+        result = transform(data_frames)
+    assert "Missing columns" in caplog.text
+    assert result == {}
+
+
+@pytest.mark.unit
+def test_transform_exception(monkeypatch, caplog):
+    from serenade_flow.pipeline import transform
+    import pandas as pd
+
+    # DataFrame that raises in __getitem__
+    class BadDF(pd.DataFrame):
+        def __getitem__(self, key):
+            raise Exception("fail")
+
+    inner_dict = {
+        "home_team": ["A"],
+        "away_team": ["B"],
+        "commence_time": ["now"],
+        "market_last_update": ["now"],
+        "outcome_point": [1]
+    }
+    data_frames = {"file.json": BadDF(inner_dict)}
+    with caplog.at_level("ERROR"):
+        result = transform(data_frames)
+    assert "Error transforming" in caplog.text
+    assert result == {}
+
+
+@pytest.mark.unit
+def test_load_to_csv_exception(monkeypatch, caplog):
+    from serenade_flow.pipeline import load
+    import pandas as pd
+
+    # DataFrame that raises on to_csv
+    class BadDF(pd.DataFrame):
+        def to_csv(self, *a, **k):
+            raise Exception("fail")
+
+    data = {"file.json": BadDF({"a": [1]})}
+    with caplog.at_level("ERROR"):
+        result = load(data, "output")
+    assert "Error loading data" in caplog.text
+    assert result is None
+
+
+@pytest.mark.unit
+def test_process_json_data_all_invalid():
+    from serenade_flow.pipeline import _process_json_data
+
+    # List of all invalid records
+    data = ["notadict", 123, None]
+    df = _process_json_data(data, "file.json")
+    import pandas as pd
+
+    assert isinstance(df, pd.DataFrame)
+    assert df.empty
