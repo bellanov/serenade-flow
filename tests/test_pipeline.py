@@ -3,7 +3,6 @@
 import pytest
 import pandas as pd
 import json
-from serenade_flow.pipeline import extract_local_data, transform, load
 from unittest.mock import patch
 
 from serenade_flow import pipeline
@@ -147,14 +146,15 @@ def test_load(sample_data_directory):
 
 @pytest.fixture
 def sample_data_directory(tmp_path):
-    """Fixture to create a temporary directory with sample JSON files."""
+    """Create a temporary directory with sample NBA event JSON files."""
+
     data = [
         {
             "id": "1",
             "sport_key": "basketball_nba",
             "sport_title": "NBA",
-            "home_team": "team a",
-            "away_team": "team b",
+            "home_team": "Team A",
+            "away_team": "Team B",
             "commence_time": "2025-02-04T00:10:00Z",
             "bookmakers": [
                 {
@@ -165,8 +165,8 @@ def sample_data_directory(tmp_path):
                             "key": "h2h",
                             "last_update": "2025-02-04T00:05:00Z",
                             "outcomes": [
-                                {"name": "team a", "price": 1.5},
-                                {"name": "team b", "price": 2.5},
+                                {"name": "Team A", "price": 1.5},
+                                {"name": "Team B", "price": 2.5},
                             ],
                         }
                     ],
@@ -177,8 +177,8 @@ def sample_data_directory(tmp_path):
             "id": "2",
             "sport_key": "basketball_nba",
             "sport_title": "NBA",
-            "home_team": "team c",
-            "away_team": "team d",
+            "home_team": "Team C",
+            "away_team": "Team D",
             "commence_time": "2025-02-04T00:20:00Z",
             "bookmakers": [
                 {
@@ -189,8 +189,8 @@ def sample_data_directory(tmp_path):
                             "key": "h2h",
                             "last_update": "2025-02-04T00:15:00Z",
                             "outcomes": [
-                                {"name": "team c", "price": 1.2},
-                                {"name": "team d", "price": 3.0},
+                                {"name": "Team C", "price": 1.2},
+                                {"name": "Team D", "price": 3.0},
                             ],
                         }
                     ],
@@ -198,18 +198,20 @@ def sample_data_directory(tmp_path):
             ],
         },
     ]
+
     json_file = tmp_path / "Events_NBA.json"
+
     json_file.write_text(json.dumps(data))
+
     return str(tmp_path)
 
 
 @pytest.mark.unit
 def test_extract_local_data(sample_data_directory):
-    """Test the extraction of data from JSON files."""
-    data_frames = extract_local_data(sample_data_directory)
+    """Test extraction from local JSON files using extract_local_data."""
+    data_frames = pipeline.extract_local_data(sample_data_directory)
     assert "Events_NBA.json" in data_frames
     assert isinstance(data_frames["Events_NBA.json"], pd.DataFrame)
-    # Each original record has 2 outcomes, so 2*2=4 flattened records
     assert len(data_frames["Events_NBA.json"]) == 4
     df = data_frames["Events_NBA.json"]
     assert "bookmaker_key" in df.columns
@@ -221,18 +223,14 @@ def test_extract_local_data(sample_data_directory):
 
 @pytest.mark.unit
 def test_transform_data(sample_data_directory):
-    """Test the transformation of extracted data."""
-    data_frames = extract_local_data(sample_data_directory)
-    transformed_data = transform(data_frames)
-    # Check capitalization
+    """Test transformation logic on extracted data."""
+    data_frames = pipeline.extract_local_data(sample_data_directory)
+    transformed_data = pipeline.transform(data_frames)
     assert transformed_data["Events_NBA.json"]["home_team"].iloc[0] == "Team A"
-    # Check datetime conversion
     assert pd.to_datetime(transformed_data["Events_NBA.json"]["commence_time"].iloc[0])
-    # Check market_last_update datetime conversion
     assert pd.to_datetime(
         transformed_data["Events_NBA.json"]["market_last_update"].iloc[0]
     )
-    # Check outcome_point is numeric
     assert pd.api.types.is_numeric_dtype(
         transformed_data["Events_NBA.json"]["outcome_point"]
     )
@@ -240,11 +238,10 @@ def test_transform_data(sample_data_directory):
 
 @pytest.mark.unit
 def test_load_data(sample_data_directory, tmp_path):
-    """Test the loading of transformed data into CSV files."""
-    data_frames = extract_local_data(sample_data_directory)
-    transformed_data = transform(data_frames)
-    load(transformed_data, str(tmp_path / "processed_data"))
-    # Check if file was created
+    """Test loading transformed data to CSV files."""
+    data_frames = pipeline.extract_local_data(sample_data_directory)
+    transformed_data = pipeline.transform(data_frames)
+    pipeline.load(transformed_data, str(tmp_path / "processed_data"))
     assert (tmp_path / "processed_data_Events_NBA.csv").exists()
 
 
@@ -306,8 +303,7 @@ def test_extract_empty_file(tmp_path):
     """Test extraction from an empty JSON file."""
     empty_file = tmp_path / "Empty.json"
     empty_file.write_text("")
-    data_frames = extract_local_data(str(tmp_path))
-    # Should not raise, and should not include the empty file
+    data_frames = pipeline.extract_local_data(str(tmp_path))
     assert ("Empty.json" not in data_frames or data_frames["Empty.json"].empty)
 
 
@@ -317,8 +313,7 @@ def test_extract_malformed_json(tmp_path, caplog):
     malformed_file = tmp_path / "Malformed.json"
     malformed_file.write_text("{not: valid json}")
     with caplog.at_level("ERROR"):
-        data_frames = extract_local_data(str(tmp_path))
-    # Should not raise, and should not include the malformed file
+        data_frames = pipeline.extract_local_data(str(tmp_path))
     assert ("Malformed.json" not in data_frames or data_frames["Malformed.json"].empty)
     assert any(
         "Error processing Malformed.json" in msg for msg in caplog.text.splitlines()
@@ -328,11 +323,10 @@ def test_extract_malformed_json(tmp_path, caplog):
 @pytest.mark.unit
 def test_extract_missing_fields(tmp_path):
     """Test extraction from a file with missing required fields."""
-    data = [{"id": "1", "sport_key": "basketball_nba"}]  # Missing most required fields
+    data = [{"id": "1", "sport_key": "basketball_nba"}]
     file = tmp_path / "MissingFields.json"
     file.write_text(json.dumps(data))
-    data_frames = extract_local_data(str(tmp_path))
-    # Should not raise, and should not include any valid records
+    data_frames = pipeline.extract_local_data(str(tmp_path))
     assert ("MissingFields.json" not in data_frames or data_frames["MissingFields.json"].empty)
 
 
@@ -352,9 +346,10 @@ def test_extract_invalid_types(tmp_path):
     ]
     file = tmp_path / "InvalidTypes.json"
     file.write_text(json.dumps(data))
-    data_frames = extract_local_data(str(tmp_path))
-    # Should not raise, and should not include any valid records
-    assert ("InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty)
+    data_frames = pipeline.extract_local_data(str(tmp_path))
+    assert (
+        "InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty
+    )
 
 
 @pytest.mark.unit
