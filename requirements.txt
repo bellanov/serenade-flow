@@ -7,3 +7,4 @@ pytest
 requests
 python-dotenv
 twine
+pyarrow
