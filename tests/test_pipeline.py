@@ -137,29 +137,30 @@ def test_extract_remote():
     ]
 
     class MockResponse:
-
         def __init__(self):
             self.status_code = 200
 
         def json(self):
             return mock_response_data
-    with patch("requests.get", return_value=MockResponse()):
+
+    with patch("serenade_flow.pipeline.requests.get", return_value=MockResponse()):
         pipeline.configure({
             "data_source": "remote",
             "data_source_path": "http://remote-api-endpoint/data",
             "data_format": "json",
         })
         data = pipeline.extract()
-        assert isinstance(data, dict)
-        assert len(data) > 0
-        assert all(isinstance(df, pd.DataFrame) for df in data.values())
-        assert len(data["remote_data.json"]) == 2
-        df = data["remote_data.json"]
-        assert "bookmaker_key" in df.columns
-        assert "market_key" in df.columns
-        assert "outcome_name" in df.columns
-        assert "outcome_price" in df.columns
-        assert "outcome_point" in df.columns
+
+    assert isinstance(data, dict)
+    assert len(data) > 0
+    assert all(isinstance(df, pd.DataFrame) for df in data.values())
+    assert len(data["remote_data.json"]) == 2
+    df = data["remote_data.json"]
+    assert "bookmaker_key" in df.columns
+    assert "market_key" in df.columns
+    assert "outcome_name" in df.columns
+    assert "outcome_price" in df.columns
+    assert "outcome_point" in df.columns
 
 @pytest.mark.unit
 def test_load(sample_data_directory):
@@ -169,7 +170,45 @@ def test_load(sample_data_directory):
         "data_format": "json",
     })
     data = pipeline.extract()
-    assert pipeline.load(data, "output") == "Data loaded successfully"
+    assert pipeline.load(data, "output") == "Data loaded successfully in CSV format"
+
+@pytest.mark.unit
+def test_load_parquet(sample_data_directory):
+    """Test loading data in Parquet format."""
+    pipeline.configure({
+        "data_source": "local",
+        "data_source_path": sample_data_directory,
+        "data_format": "json",
+    })
+    data = pipeline.extract()
+    result = pipeline.load(data, "output", "parquet")
+    assert result == "Data loaded successfully in PARQUET format"
+    
+    # Verify parquet file was created
+    import os
+    parquet_file = "output_Events_NBA.parquet"
+    assert os.path.exists(parquet_file)
+    
+    # Verify we can read the parquet file back
+    df = pd.read_parquet(parquet_file)
+    assert not df.empty
+    assert len(df) == 4  # Same as original data
+    
+    # Clean up
+    os.remove(parquet_file)
+
+@pytest.mark.unit
+def test_load_invalid_format(sample_data_directory):
+    """Test loading with invalid format parameter."""
+    pipeline.configure({
+        "data_source": "local",
+        "data_source_path": sample_data_directory,
+        "data_format": "json",
+    })
+    data = pipeline.extract()
+    # Should default to CSV for invalid format
+    result = pipeline.load(data, "output", "invalid_format")
+    assert result == "Data loaded successfully in CSV format"
 
 @pytest.mark.unit
 def test_extract_local_data(sample_data_directory):
@@ -184,6 +223,7 @@ def test_extract_local_data(sample_data_directory):
     assert "outcome_price" in df.columns
     assert "outcome_point" in df.columns
 
+
 @pytest.mark.unit
 def test_transform_data(sample_data_directory):
     data_frames = extract_local_data(sample_data_directory)
@@ -192,6 +232,7 @@ def test_transform_data(sample_data_directory):
     assert pd.to_datetime(transformed_data["Events_NBA.json"]["commence_time"].iloc[0])
     assert pd.to_datetime(transformed_data["Events_NBA.json"]["market_last_update"].iloc[0])
     assert pd.api.types.is_numeric_dtype(transformed_data["Events_NBA.json"]["outcome_point"])
+
 
 # --- Edge/Negative/Utility Tests (unchanged) ---
 

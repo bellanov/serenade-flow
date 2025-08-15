@@ -18,9 +18,9 @@ Coming Soon.
 
 SerenadeFlow supports extracting data from various sources. The `data_source` and `data_source_path` parameters in the pipeline configuration determine where the data is extracted from.
 
-### Local JSON Files
+### Local Files (JSON and Parquet)
 
-To extract data from local JSON files, set `data_source` to `local` and `data_source_path` to the directory containing your JSON files. The pipeline will read all `.json` files within the specified directory.
+To extract data from local files, set `data_source` to `local` and `data_source_path` to the directory containing your files. The pipeline will read all `.json` and `.parquet` files within the specified directory.
 
 Example `config.json` for local data:
 
@@ -44,6 +44,30 @@ Example `config.json` for remote data:
     "data_source_path": "https://api.example.com/data",
     "data_format": "json"
 }
+```
+
+## Output Formats
+
+SerenadeFlow supports multiple output formats for your processed data:
+
+### CSV Format (Default)
+The traditional CSV format is the default output format, providing wide compatibility with various tools and applications.
+
+### Parquet Format
+Parquet is a column-oriented storage format that offers compression and better performance for analytics workloads.
+
+To use Parquet output format:
+
+```python
+from serenade_flow.pipeline import configure, extract, transform, load
+
+# Configure and process data
+configure({"data_source": "local", "data_source_path": "./data"})
+data_frames = extract()
+transformed_data = transform(data_frames)
+
+# Load as Parquet files
+load(transformed_data, "output_prefix", "parquet")
 ```
 
 ## Plugin System
