@@ -8,7 +8,7 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import pandas as pd
 import requests
@@ -18,7 +18,7 @@ from serenade_flow.quality import DataQualityAssessor
 
 # Global configuration dictionary
 CONFIG: Dict[str, Any] = {}
-PLUGIN_REGISTRY: PluginRegistry | None = None
+PLUGIN_REGISTRY: Optional[PluginRegistry] = None
 
 # Configure Logging
 logging.basicConfig(

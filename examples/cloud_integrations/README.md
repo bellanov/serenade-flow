@@ -24,6 +24,17 @@ This directory contains self-contained examples for integrating SerenadeFlow wit
   - Data quality assessment and analytics
   - Production-ready patterns for batch processing
 
+### FantasyAce Cloud Functions
+- **Directory:** `fantasyace/`
+- **Purpose:** Demonstrates integration with FantasyAce Cloud Functions for real-time sports odds data
+- **Examples:**
+  - `fantasyace_cf_example.py` - Data extraction from Cloud Functions with event-by-event or sport-based queries
+- **Features:**
+  - Real-time data from Cloud Functions endpoints
+  - Robust error handling and retry logic
+  - Support for both event-specific and sport-based queries
+  - Data normalization and flattening for pipeline compatibility
+
 ### AWS S3 (Coming Soon)
 - **Directory:** `aws/` (planned)
 - **Purpose:** Will demonstrate S3 integration with similar patterns
@@ -60,6 +71,10 @@ python examples/cloud_integrations/gcs/gcs_public_bucket_example.py
 
 # GCS batch processing
 python examples/cloud_integrations/gcs/gcs_batch_processing_example.py
+
+# FantasyAce Cloud Functions
+python examples/cloud_integrations/fantasyace/fantasyace_cf_example.py \
+    --event-id a03f89d3aaadf737deb09be24986d5bf --output-prefix fantasyace
 ```
 
 ### Running All Examples

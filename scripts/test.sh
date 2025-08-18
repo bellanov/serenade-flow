@@ -3,10 +3,10 @@
 # Execute unit tests.
 
 echo "Executing Unit Tests..."
-coverage run -m pytest tests/
+python3 -m coverage run -m pytest tests/
 
 echo "Generating Report..."
-coverage report -m
+python3 -m coverage report -m
 
 echo "Build HTML Report..."
-coverage html
+python3 -m coverage html
