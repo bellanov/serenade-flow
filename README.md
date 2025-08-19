@@ -96,6 +96,36 @@ plugin.configure(bucket_url="https://storage.googleapis.com/odds-data-samples-4v
 result = plugin.extract_with_retry("odds/american/event_008740fcf1af65b0cc9e79.json")
 ```
 
+### FantasyAce Cloud Functions Plugin
+
+Use Cloud Functions to fetch sports, events, and event odds.
+
+```python
+from serenade_flow import pipeline
+
+config = {
+    "plugins": {
+        "fantasyace_cf": {
+            "module": "serenade_flow.community.fantasyace_cloud_functions_plugin",
+            "class": "FantasyAceCloudFunctionsPlugin",
+            "enabled": True,
+        }
+    }
+}
+
+pipeline.configure(config)
+plugin = pipeline.PLUGIN_REGISTRY.get("fantasyace_cf")
+plugin.configure(
+    base_url_sports="https://getsports-twqu2g763q-uc.a.run.app/",
+    base_url_events="https://getevents-twqu2g763q-uc.a.run.app/",
+    base_url_event_odds="https://geteventodds-twqu2g763q-uc.a.run.app/",
+)
+
+data_frames = plugin.extract_events_and_odds(sport_key="americanfootball_nfl", limit=50)
+transformed = pipeline.transform(data_frames)
+pipeline.load(transformed, output_prefix="fantasyace")
+```
+
 ### Contributing Plugins
 
 See `serenade_flow/community/PLUGIN_TEMPLATE.md` for how to document and contribute your own plugins.

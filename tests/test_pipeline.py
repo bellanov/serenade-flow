@@ -4,6 +4,9 @@ import pytest
 import pandas as pd
 import json
 from serenade_flow import pipeline
+from serenade_flow.community.fantasyace_cloud_functions_plugin import (
+    FantasyAceCloudFunctionsPlugin,
+)
 from unittest.mock import patch
 from serenade_flow.pipeline import extract_local_data, transform
 
@@ -577,9 +580,177 @@ def test_process_json_data_non_list_dict():
     df = _process_json_data("not a list or dict", "test.json")
     assert isinstance(df, pd.DataFrame)
     assert df.empty
+
+
+@pytest.mark.unit
+def test_fantasyace_plugin_unwraps_data_structure(monkeypatch):
+    plugin = FantasyAceCloudFunctionsPlugin(
+        base_url_sports="https://example/getsports",
+        base_url_events="https://example/getevents",
+        base_url_event_odds="https://example/geteventodds",
+    )
+
+    # Simulate endpoints returning {"data": [...]} and {"data": {...}}
+    def fake_get_with_retry(url, params=None):
+        if "getsports" in url:
+            return {"data": [{"key": "basketball_nba", "title": "NBA"}]}
+        if "getevents" in url:
+            return {"data": [{"id": "evt1", "sport_key": "basketball_nba"}]}
+        if "geteventodds" in url:
+            return {
+                "data": [
+                    {
+                        "id": "evt1",
+                        "sport_key": "basketball_nba",
+                        "sport_title": "NBA",
+                        "home_team": "Team A",
+                        "away_team": "Team B",
+                        "commence_time": "2025-02-04T00:10:00Z",
+                        "bookmakers": [
+                            {
+                                "key": "bk",
+                                "title": "Book",
+                                "markets": [
+                                    {
+                                        "key": "h2h",
+                                        "last_update": "2025-02-04T00:05:00Z",
+                                        "outcomes": [
+                                            {"name": "Team A", "price": 1.1},
+                                            {"name": "Team B", "price": 2.2},
+                                        ],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        return {}
+
+    monkeypatch.setattr(plugin, "_get_with_retry", fake_get_with_retry)
+
+    # Ensure list_sports and list_events unwrap data
+    sports = plugin.list_sports()
+    assert isinstance(sports, list) and sports and sports[0]["key"] == "basketball_nba"
+
+    events = plugin.list_events("basketball_nba", limit=1)
+    assert isinstance(events, list) and events and events[0]["id"] == "evt1"
+
+    # Ensure get_event_odds returns a dict (first element of data list)
+    odds = plugin.get_event_odds("evt1")
+    assert isinstance(odds, dict) and odds.get("id") == "evt1"
+
+    # Ensure pipeline can flatten odds data
+    df = pipeline._process_json_data([odds], "fantasyace.json")
+    import pandas as pd
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+    assert "outcome_name" in df.columns
+
+
+@pytest.mark.unit
+def test_fantasyace_plugin_configure():
+    """Test FantasyAce plugin configuration."""
+    plugin = FantasyAceCloudFunctionsPlugin()
+    plugin.configure(
+        base_url_sports="https://example/getsports",
+        base_url_events="https://example/getevents",
+        base_url_event_odds="https://example/geteventodds",
+        max_retries=5,
+        retry_delay=2.0,
+        request_timeout_seconds=3.0,
+    )
+    assert plugin.base_url_sports == "https://example/getsports"
+    assert plugin.base_url_events == "https://example/getevents"
+    assert plugin.base_url_event_odds == "https://example/geteventodds"
+    assert plugin.max_retries == 5
+    assert plugin.retry_delay == 2.0
+    assert plugin.request_timeout_seconds == 3.0
+
+
+@pytest.mark.unit
+def test_fantasyace_plugin_extract_end_to_end(monkeypatch):
+    """Test FantasyAce plugin extract_events_and_odds end-to-end."""
+    plugin = FantasyAceCloudFunctionsPlugin(
+        base_url_sports="https://example/getsports",
+        base_url_events="https://example/getevents",
+        base_url_event_odds="https://example/geteventodds",
+    )
+
+    def fake_get_with_retry(url, params=None):
+        if "getsports" in url:
+            return {"data": [{"key": "basketball_nba", "title": "NBA"}]}
+        if "getevents" in url:
+            return {"data": [{"id": "evt1", "sport_key": "basketball_nba"}]}
+        if "geteventodds" in url:
+            return {
+                "data": [
+                    {
+                        "id": "evt1",
+                        "sport_key": "basketball_nba",
+                        "sport_title": "NBA",
+                        "home_team": "Team A",
+                        "away_team": "Team B",
+                        "commence_time": "2025-02-04T00:10:00Z",
+                        "bookmakers": [
+                            {
+                                "key": "bk",
+                                "title": "Book",
+                                "markets": [
+                                    {
+                                        "key": "h2h",
+                                        "last_update": "2025-02-04T00:05:00Z",
+                                        "outcomes": [
+                                            {"name": "Team A", "price": 1.1},
+                                            {"name": "Team B", "price": 2.2},
+                                        ],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        return {}
+
+    monkeypatch.setattr(plugin, "_get_with_retry", fake_get_with_retry)
+
+    frames = plugin.extract_events_and_odds("basketball_nba", limit=1)
+    assert "fantasyace.json" in frames
+    df = frames["fantasyace.json"]
+    import pandas as pd
+    assert isinstance(df, pd.DataFrame)
+    assert len(df) == 2  # 2 outcomes
+    assert "outcome_name" in df.columns
+    assert "outcome_price" in df.columns
+
+
+@pytest.mark.unit
+def test_fantasyace_plugin_empty_responses(monkeypatch):
+    """Test FantasyAce plugin with empty API responses."""
+    plugin = FantasyAceCloudFunctionsPlugin(
+        base_url_sports="https://example/getsports",
+        base_url_events="https://example/getevents",
+        base_url_event_odds="https://example/geteventodds",
+    )
+
+    def fake_get_with_retry(url, params=None):
+        if "getsports" in url:
+            return {"data": []}
+        if "getevents" in url:
+            return {"data": []}
+        return {}
+
+    monkeypatch.setattr(plugin, "_get_with_retry", fake_get_with_retry)
     
-    # None input
-    df = _process_json_data(None, "test.json")
+    frames = plugin.extract_events_and_odds("basketball_nba", limit=1)
+    assert frames == {}
+
+
+@pytest.mark.unit
+def test_process_json_data_none_input():
+    """Test _process_json_data with None input."""
+    df = pipeline._process_json_data(None, "test.json")
     assert isinstance(df, pd.DataFrame)
     assert df.empty
 
