@@ -25,10 +25,10 @@ def test_load_from_config_success(registry):
     mock_plugin_class = MagicMock()
     mock_plugin_instance = MagicMock()
     mock_plugin_class.return_value = mock_plugin_instance
-    
+
     mock_module = MagicMock()
     mock_module.TestPlugin = mock_plugin_class
-    
+
     config = {
         "plugins": {
             "test_plugin": {
@@ -38,10 +38,9 @@ def test_load_from_config_success(registry):
             }
         }
     }
-    
+
     with patch("importlib.import_module", return_value=mock_module):
-        with patch("logging.info") as mock_log:
-            registry.load_from_config(config)
+        registry.load_from_config(config)
     
     assert "test_plugin" in registry.plugins
     assert registry.plugins["test_plugin"] == mock_plugin_instance
@@ -60,9 +59,9 @@ def test_load_from_config_disabled_plugin(registry):
             }
         }
     }
-    
+
     registry.load_from_config(config)
-    
+
     assert "test_plugin" not in registry.plugins
 
 
@@ -77,9 +76,9 @@ def test_load_from_config_missing_enabled_key(registry):
             }
         }
     }
-    
+
     registry.load_from_config(config)
-    
+
     assert "test_plugin" not in registry.plugins
 
 
@@ -95,10 +94,10 @@ def test_load_from_config_import_error(registry, caplog):
             }
         }
     }
-    
+
     with caplog.at_level(logging.ERROR):
         registry.load_from_config(config)
-    
+
     assert "test_plugin" not in registry.plugins
     assert any("Failed to load plugin" in msg for msg in caplog.text.splitlines())
 
@@ -108,7 +107,7 @@ def test_load_from_config_attribute_error(registry, caplog):
     """Test handling of AttributeError when class doesn't exist."""
     mock_module = MagicMock()
     del mock_module.TestPlugin  # Make sure it doesn't exist
-    
+
     config = {
         "plugins": {
             "test_plugin": {
@@ -118,11 +117,11 @@ def test_load_from_config_attribute_error(registry, caplog):
             }
         }
     }
-    
+
     with patch("importlib.import_module", return_value=mock_module):
         with caplog.at_level(logging.ERROR):
             registry.load_from_config(config)
-    
+
     assert "test_plugin" not in registry.plugins
     assert any("Failed to load plugin" in msg for msg in caplog.text.splitlines())
 
@@ -132,9 +131,9 @@ def test_get_existing_plugin(registry):
     """Test getting an existing plugin."""
     mock_plugin = MagicMock()
     registry.plugins["test_plugin"] = mock_plugin
-    
+
     result = registry.get("test_plugin")
-    
+
     assert result == mock_plugin
 
 
@@ -142,7 +141,7 @@ def test_get_existing_plugin(registry):
 def test_get_nonexistent_plugin(registry):
     """Test getting a nonexistent plugin."""
     result = registry.get("nonexistent")
-    
+
     assert result is None
 
 
@@ -153,9 +152,9 @@ def test_all_plugins(registry):
     mock_plugin2 = MagicMock()
     registry.plugins["plugin1"] = mock_plugin1
     registry.plugins["plugin2"] = mock_plugin2
-    
+
     all_plugins = registry.all()
-    
+
     assert len(all_plugins) == 2
     assert "plugin1" in all_plugins
     assert "plugin2" in all_plugins
@@ -169,17 +168,17 @@ def test_load_from_config_multiple_plugins(registry):
     mock_plugin_class1 = MagicMock()
     mock_plugin_instance1 = MagicMock()
     mock_plugin_class1.return_value = mock_plugin_instance1
-    
+
     mock_plugin_class2 = MagicMock()
     mock_plugin_instance2 = MagicMock()
     mock_plugin_class2.return_value = mock_plugin_instance2
-    
+
     mock_module1 = MagicMock()
     mock_module1.Plugin1 = mock_plugin_class1
-    
+
     mock_module2 = MagicMock()
     mock_module2.Plugin2 = mock_plugin_class2
-    
+
     config = {
         "plugins": {
             "plugin1": {
@@ -194,17 +193,17 @@ def test_load_from_config_multiple_plugins(registry):
             },
         }
     }
-    
+
     def import_module_side_effect(module_name):
         if module_name == "test.module1":
             return mock_module1
         elif module_name == "test.module2":
             return mock_module2
         return None
-    
+
     with patch("importlib.import_module", side_effect=import_module_side_effect):
         registry.load_from_config(config)
-    
+
     assert "plugin1" in registry.plugins
     assert "plugin2" in registry.plugins
     assert registry.plugins["plugin1"] == mock_plugin_instance1
@@ -215,9 +214,9 @@ def test_load_from_config_multiple_plugins(registry):
 def test_load_from_config_no_plugins_key(registry):
     """Test loading from config with no plugins key."""
     config = {}
-    
+
     registry.load_from_config(config)
-    
+
     assert len(registry.plugins) == 0
 
 
@@ -225,9 +224,7 @@ def test_load_from_config_no_plugins_key(registry):
 def test_load_from_config_empty_plugins(registry):
     """Test loading from config with empty plugins dict."""
     config = {"plugins": {}}
-    
+
     registry.load_from_config(config)
-    
+
     assert len(registry.plugins) == 0
-
-
