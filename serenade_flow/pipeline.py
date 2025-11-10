@@ -2,6 +2,9 @@
 ETL Pipeline Implementation.
 
 Extract, Load, and Transform data from local or remote data sources.
+
+Note: Domain-specific logic should be implemented in examples rather than here.
+See examples/ for complete ETL workflow recipes.
 """
 
 import json
@@ -29,6 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger("serenade-flow")
 
 # Schema for validating sports event data
+# Note: Domain-specific schemas should be implemented in examples
 SPORTS_EVENT_SCHEMA = {
     "type": "object",
     "properties": {
