@@ -27,3 +27,9 @@ packages = ["serenade_flow/"]
 [project.urls]
 Homepage = "https://github.com/bellanov/serenade-flow"
 Issues = "https://github.com/bellanov/serenade-flow/issues"
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "*/test_*.py",
+]
