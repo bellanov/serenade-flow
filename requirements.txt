@@ -1,4 +1,3 @@
-build
 coverage
 flake8
 jsonschema
@@ -6,5 +5,4 @@ pandas
 pytest
 requests
 python-dotenv
-twine
 pyarrow
