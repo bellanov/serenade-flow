@@ -41,7 +41,7 @@ def test_load_from_config_success(registry):
 
     with patch("importlib.import_module", return_value=mock_module):
         registry.load_from_config(config)
-    
+
     assert "test_plugin" in registry.plugins
     assert registry.plugins["test_plugin"] == mock_plugin_instance
     mock_plugin_class.assert_called_once()

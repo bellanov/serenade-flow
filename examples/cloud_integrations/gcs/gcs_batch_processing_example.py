@@ -280,6 +280,7 @@ def get_all_odds_files_by_format():
 # --- REPLACE CATEGORIES with new odds file discovery ---
 odds_files_by_format = get_all_odds_files_by_format()
 
+
 # Flatten for batch processing, tagging each with its format
 def get_tagged_odds_file_list():
     tagged = []

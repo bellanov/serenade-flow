@@ -12,6 +12,7 @@ from serenade_flow.pipeline import extract_local_data, transform
 
 # --- Fixtures ---
 
+
 @pytest.fixture
 def sample_data_directory(tmp_path):
     """Create a temporary directory with sample NBA event JSON files."""
@@ -69,6 +70,7 @@ def sample_data_directory(tmp_path):
     json_file.write_text(json.dumps(data))
     return str(tmp_path)
 
+
 @pytest.fixture
 def local_config(sample_data_directory):
     return {
@@ -76,6 +78,7 @@ def local_config(sample_data_directory):
         "data_source_path": sample_data_directory,
         "data_format": "json",
     }
+
 
 @pytest.fixture
 def remote_config():
@@ -87,6 +90,7 @@ def remote_config():
 
 # --- Helpers ---
 
+
 def assert_valid_extraction(data):
     assert isinstance(data, dict)
     assert all(isinstance(df, pd.DataFrame) for df in data.values())
@@ -94,6 +98,7 @@ def assert_valid_extraction(data):
         assert not df.empty
 
 # --- Core Tests (deduplicated) ---
+
 
 @pytest.mark.unit
 def test_extract_local(sample_data_directory):
@@ -109,6 +114,7 @@ def test_extract_local(sample_data_directory):
     assert "outcome_name" in data["Events_NBA.json"].columns
     assert "outcome_price" in data["Events_NBA.json"].columns
     assert "outcome_point" in data["Events_NBA.json"].columns
+
 
 @pytest.mark.unit
 def test_extract_remote():
@@ -165,6 +171,7 @@ def test_extract_remote():
     assert "outcome_price" in df.columns
     assert "outcome_point" in df.columns
 
+
 @pytest.mark.unit
 def test_load(sample_data_directory):
     pipeline.configure({
@@ -174,6 +181,7 @@ def test_load(sample_data_directory):
     })
     data = pipeline.extract()
     assert pipeline.load(data, "output") == "Data loaded successfully in CSV format"
+
 
 @pytest.mark.unit
 def test_load_parquet(sample_data_directory):
@@ -186,19 +194,20 @@ def test_load_parquet(sample_data_directory):
     data = pipeline.extract()
     result = pipeline.load(data, "output", "parquet")
     assert result == "Data loaded successfully in PARQUET format"
-    
+
     # Verify parquet file was created
     import os
     parquet_file = "output_Events_NBA.parquet"
     assert os.path.exists(parquet_file)
-    
+
     # Verify we can read the parquet file back
     df = pd.read_parquet(parquet_file)
     assert not df.empty
     assert len(df) == 4  # Same as original data
-    
+
     # Clean up
     os.remove(parquet_file)
+
 
 @pytest.mark.unit
 def test_load_invalid_format(sample_data_directory):
@@ -212,6 +221,7 @@ def test_load_invalid_format(sample_data_directory):
     # Should default to CSV for invalid format
     result = pipeline.load(data, "output", "invalid_format")
     assert result == "Data loaded successfully in CSV format"
+
 
 @pytest.mark.unit
 def test_extract_local_data(sample_data_directory):
@@ -248,6 +258,7 @@ def test_extract_empty_file(tmp_path):
     # Should not raise, and should not include the empty file
     assert ("Empty.json" not in data_frames or data_frames["Empty.json"].empty)
 
+
 @pytest.mark.unit
 def test_extract_malformed_json(tmp_path, caplog):
     """Test extraction from a malformed JSON file."""
@@ -261,6 +272,7 @@ def test_extract_malformed_json(tmp_path, caplog):
         "Error processing Malformed.json" in msg for msg in caplog.text.splitlines()
     )
 
+
 @pytest.mark.unit
 def test_extract_missing_fields(tmp_path):
     """Test extraction from a file with missing required fields."""
@@ -270,6 +282,7 @@ def test_extract_missing_fields(tmp_path):
     data_frames = extract_local_data(str(tmp_path))
     # Should not raise, and should not include any valid records
     assert ("MissingFields.json" not in data_frames or data_frames["MissingFields.json"].empty)
+
 
 @pytest.mark.unit
 def test_extract_invalid_types(tmp_path):
@@ -291,6 +304,7 @@ def test_extract_invalid_types(tmp_path):
     # Should not raise, and should not include any valid records
     assert ("InvalidTypes.json" not in data_frames or data_frames["InvalidTypes.json"].empty)
 
+
 @pytest.mark.unit
 def test_validate_outcome_negative():
     from serenade_flow.pipeline import _validate_outcome
@@ -301,6 +315,7 @@ def test_validate_outcome_negative():
     assert not _validate_outcome({"price": 1.5})
     # Empty dict
     assert not _validate_outcome({})
+
 
 @pytest.mark.unit
 def test_validate_market_negative():
@@ -319,6 +334,7 @@ def test_validate_market_negative():
         {"key": "h2h", "last_update": "2025-01-01", "outcomes": [{"name": "A"}]}
     )
 
+
 @pytest.mark.unit
 def test_validate_bookmaker_negative():
     from serenade_flow.pipeline import _validate_bookmaker
@@ -335,6 +351,7 @@ def test_validate_bookmaker_negative():
     assert not _validate_bookmaker(
         {"key": "bk1", "title": "Bookmaker 1", "markets": [{"key": "h2h"}]}
     )
+
 
 @pytest.mark.unit
 def test_validate_data_negative():
@@ -368,6 +385,7 @@ def test_validate_data_negative():
             raise Exception("fail")
     assert not validate_data(BadDict())
 
+
 @pytest.mark.unit
 def test_transform_datetime_error(caplog):
     from serenade_flow.pipeline import transform_datetime
@@ -375,6 +393,7 @@ def test_transform_datetime_error(caplog):
         with pytest.raises(Exception):
             transform_datetime("not-a-date")
     assert any("Error parsing datetime" in msg for msg in caplog.text.splitlines())
+
 
 @pytest.mark.unit
 def test_configure_updates_and_returns():
@@ -389,6 +408,7 @@ def test_configure_updates_and_returns():
     # Restore original config
     CONFIG.clear()
     CONFIG.update(orig)
+
 
 @pytest.mark.unit
 def test_flatten_record_edge_cases():
@@ -430,6 +450,7 @@ def test_flatten_record_edge_cases():
     assert len(rows) == 1
     assert rows[0]["outcome_name"] is None and rows[0]["outcome_price"] is None
 
+
 @pytest.mark.unit
 def test_transform_missing_columns(caplog):
     from serenade_flow.pipeline import transform
@@ -441,6 +462,7 @@ def test_transform_missing_columns(caplog):
         result = transform(data_frames)
     assert "Missing columns" in caplog.text
     assert result == {}
+
 
 @pytest.mark.unit
 def test_transform_exception(monkeypatch, caplog):
@@ -465,6 +487,7 @@ def test_transform_exception(monkeypatch, caplog):
     assert "Error transforming" in caplog.text
     assert result == {}
 
+
 @pytest.mark.unit
 def test_load_to_csv_exception(monkeypatch, caplog):
     from serenade_flow.pipeline import load
@@ -481,6 +504,7 @@ def test_load_to_csv_exception(monkeypatch, caplog):
     assert "Error loading data" in caplog.text
     assert result is None
 
+
 @pytest.mark.unit
 def test_process_json_data_all_invalid():
     from serenade_flow.pipeline import _process_json_data
@@ -493,14 +517,15 @@ def test_process_json_data_all_invalid():
     assert isinstance(df, pd.DataFrame)
     assert df.empty
 
+
 @pytest.mark.unit
 def test_configure_with_plugins():
     """Test configure function with plugins configuration."""
     from serenade_flow.pipeline import configure, CONFIG
-    
+
     # Save original config
     orig = CONFIG.copy()
-    
+
     # Test with plugins config
     config_with_plugins = {
         "data_source": "test",
@@ -512,22 +537,23 @@ def test_configure_with_plugins():
             }
         }
     }
-    
+
     result = configure(config_with_plugins)
-    
+
     # Verify config was updated
     assert result["data_source"] == "test"
     assert "plugins" in result
-    
+
     # Restore original config
     CONFIG.clear()
     CONFIG.update(orig)
+
 
 @pytest.mark.unit
 def test_process_json_data_dict_input():
     """Test _process_json_data with dict input."""
     from serenade_flow.pipeline import _process_json_data
-    
+
     # Valid dict input
     data = {
         "id": "1",
@@ -553,29 +579,31 @@ def test_process_json_data_dict_input():
             }
         ],
     }
-    
+
     df = _process_json_data(data, "test.json")
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 2  # 2 outcomes
     assert "outcome_name" in df.columns
 
+
 @pytest.mark.unit
 def test_process_json_data_invalid_dict():
     """Test _process_json_data with invalid dict input."""
     from serenade_flow.pipeline import _process_json_data
-    
+
     # Invalid dict (missing required fields)
     data = {"id": "1", "sport_key": "basketball_nba"}
-    
+
     df = _process_json_data(data, "test.json")
     assert isinstance(df, pd.DataFrame)
     assert df.empty
+
 
 @pytest.mark.unit
 def test_process_json_data_non_list_dict():
     """Test _process_json_data with non-list/dict input."""
     from serenade_flow.pipeline import _process_json_data
-    
+
     # String input
     df = _process_json_data("not a list or dict", "test.json")
     assert isinstance(df, pd.DataFrame)
@@ -742,7 +770,7 @@ def test_fantasyace_plugin_empty_responses(monkeypatch):
         return {}
 
     monkeypatch.setattr(plugin, "_get_with_retry", fake_get_with_retry)
-    
+
     frames = plugin.extract_events_and_odds("basketball_nba", limit=1)
     assert frames == {}
 
@@ -754,15 +782,16 @@ def test_process_json_data_none_input():
     assert isinstance(df, pd.DataFrame)
     assert df.empty
 
+
 @pytest.mark.unit
 def test_validate_data_exception_path():
     """Test validate_data function exception handling."""
     from serenade_flow.pipeline import validate_data
-    
+
     # Create an object that raises an exception when accessed
     class ExceptionDict:
         def __getitem__(self, key):
             raise Exception("Test exception")
-    
+
     # This should return False due to exception
     assert not validate_data(ExceptionDict())
