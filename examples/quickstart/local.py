@@ -1,4 +1,24 @@
-"""Example SerenadeFlow Usage."""
+"""Process Local Data.
+
+In this example, SerenadeFlow processes data from local data sources.
+
+Usage:
+
+1. Import the pipeline module from serenade_flow.
+2. Configure the data source.
+
+    pipeline.configure({args})
+
+3. Extract data 
+
+    pipeline.extract()
+
+4. Define and perform any necessary transformations.
+
+5. Export the data into your desired format (Parquet, JSON, CSV)
+
+    pipeline.load({args})
+"""
 
 from serenade_flow import pipeline
 
@@ -15,7 +35,7 @@ print("\nExecuting Quickstart Example\n")
 #
 # Note: Firestore integration will be supported via HTTP API in the future.
 pipeline.configure({
-    "data_source": "remote",
+    "data_source": "local",
     "data_format": "json",
     "data_source_path": [
         "data/file_1",
