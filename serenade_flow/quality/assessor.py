@@ -1,3 +1,10 @@
+"""Data Quality Assessor.
+
+This file defines the DataQualityAssesor class. It defines a series of functions that are responsible
+for assessing data quality for pipeline runs. It also provides scoring, missing value detection,
+schema validation, and duplicate detection.
+"""
+
 import pandas as pd
 
 
@@ -6,7 +13,9 @@ class DataQualityAssessor:
     Assess data quality for pipeline runs. Provides scoring, missing value detection,
     schema validation, and duplicate detection.
     """
+
     def __init__(self):
+        """Initialize Class Variables."""
         pass
 
     def assess(self, data, schema=None):
