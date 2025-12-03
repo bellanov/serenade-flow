@@ -314,6 +314,8 @@ def transform(data_frames: dict) -> dict:
     return transformed_data
 
 
+# Look into script typing
+# def load(data: Dict[str, pd.DataFrame], output_prefix: str, output_format: str = "csv") -> Optional[str]:
 def load(data: dict, output_prefix: str, output_format: str = "csv") -> str:
     """Load transformed data into files.
 
