@@ -3,10 +3,10 @@
 import json
 import os
 import sys
-from typing import Dict, Any, List
+from datetime import datetime, timezone
+from typing import Any, Dict, List
 
 import pandas as pd
-from datetime import datetime, timezone
 
 from serenade_flow import pipeline
 from serenade_flow.quality import DataQualityAssessor
@@ -161,7 +161,9 @@ def extract_sports_odds_from_local(data_directory: str) -> Dict[str, pd.DataFram
     return data_frames
 
 
-def transform_sports_odds_data(data_frames: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+def transform_sports_odds_data(
+    data_frames: Dict[str, pd.DataFrame],
+) -> Dict[str, pd.DataFrame]:
     """Transform sports odds data."""
     transformed_data: Dict[str, pd.DataFrame] = {}
 
@@ -185,7 +187,9 @@ def transform_sports_odds_data(data_frames: Dict[str, pd.DataFrame]) -> Dict[str
                 df["market_last_update"] = pd.to_datetime(df["market_last_update"])
 
             if "outcome_point" in df.columns:
-                df["outcome_point"] = pd.to_numeric(df["outcome_point"], errors="coerce")
+                df["outcome_point"] = pd.to_numeric(
+                    df["outcome_point"], errors="coerce"
+                )
 
             df["processed_at"] = datetime.now(timezone.utc)
             df["source_file"] = key
@@ -208,20 +212,20 @@ def main():
         "--data-dir",
         type=str,
         default="./data",
-        help="Directory containing sports odds JSON files (default: ./data)"
+        help="Directory containing sports odds JSON files (default: ./data)",
     )
     parser.add_argument(
         "--output-prefix",
         type=str,
         default="sports_odds",
-        help="Prefix for output files (default: sports_odds)"
+        help="Prefix for output files (default: sports_odds)",
     )
     parser.add_argument(
         "--format",
         type=str,
         choices=["csv", "parquet"],
         default="csv",
-        help="Output format (default: csv)"
+        help="Output format (default: csv)",
     )
 
     args = parser.parse_args()

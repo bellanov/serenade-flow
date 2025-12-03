@@ -5,18 +5,20 @@ parallel processing simulation, data quality metrics, and analytics
 for the organized bucket structure.
 """
 
-from serenade_flow import pipeline
+import statistics
 import time
-from typing import Dict, List, Any
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from collections import defaultdict
-import statistics
+from typing import Any, Dict, List
+
+from serenade_flow import pipeline
 
 
 @dataclass
 class ProcessingMetrics:
     """Comprehensive metrics for batch processing operations."""
+
     total_files: int
     successful_files: int
     failed_files: int
@@ -31,6 +33,7 @@ class ProcessingMetrics:
 @dataclass
 class DataQualityReport:
     """Data quality assessment for extracted data."""
+
     file_path: str
     record_count: int
     column_count: int
@@ -55,7 +58,7 @@ class BatchProcessor:
         if not data:
             return None
         for key, value in data.items():
-            if hasattr(value, 'shape') and value.shape[0] > 0:
+            if hasattr(value, "shape") and value.shape[0] > 0:
                 return value
         return None
 
@@ -63,19 +66,22 @@ class BatchProcessor:
         """Analyze data types of DataFrame columns."""
         data_types = {}
         for col in df.columns:
-            if df[col].dtype == 'object':
-                data_types[col] = 'string'
-            elif 'int' in str(df[col].dtype):
-                data_types[col] = 'integer'
-            elif 'float' in str(df[col].dtype):
-                data_types[col] = 'float'
+            if df[col].dtype == "object":
+                data_types[col] = "string"
+            elif "int" in str(df[col].dtype):
+                data_types[col] = "integer"
+            elif "float" in str(df[col].dtype):
+                data_types[col] = "float"
             else:
                 data_types[col] = str(df[col].dtype)
         return data_types
 
     def _calculate_quality_score(
-        self, record_count: int, column_count: int,
-        missing_values: int, duplicate_records: int
+        self,
+        record_count: int,
+        column_count: int,
+        missing_values: int,
+        duplicate_records: int,
     ) -> tuple[float, List[str]]:
         """Calculate quality score and identify issues."""
         quality_score = 100.0
@@ -113,7 +119,7 @@ class BatchProcessor:
                 duplicate_records=0,
                 data_types={},
                 quality_score=0.0,
-                issues=["No valid DataFrame found"]
+                issues=["No valid DataFrame found"],
             )
 
         record_count = len(df)
@@ -133,7 +139,7 @@ class BatchProcessor:
             duplicate_records=duplicate_records,
             data_types=data_types,
             quality_score=quality_score,
-            issues=issues
+            issues=issues,
         )
 
     def process_file_with_analytics(self, file_path: str) -> Dict[str, Any]:
@@ -141,23 +147,25 @@ class BatchProcessor:
         start_time = time.time()
         try:
             print(f"🔍 Processing: {file_path}")
-            pipeline.configure({
-                "data_source": "remote",
-                "data_source_path": self.bucket_url + file_path,
-                "data_format": "json"
-            })
+            pipeline.configure(
+                {
+                    "data_source": "remote",
+                    "data_source_path": self.bucket_url + file_path,
+                    "data_format": "json",
+                }
+            )
             data = pipeline.extract()
             quality_report = self.assess_data_quality(data, file_path)
             self.quality_reports.append(quality_report)
             processing_time = time.time() - start_time
             result = {
-                'success': True,
-                'file_path': file_path,
-                'processing_time': processing_time,
-                'record_count': quality_report.record_count,
-                'quality_score': quality_report.quality_score,
-                'data': data,
-                'quality_report': quality_report
+                "success": True,
+                "file_path": file_path,
+                "processing_time": processing_time,
+                "record_count": quality_report.record_count,
+                "quality_score": quality_report.quality_score,
+                "data": data,
+                "quality_report": quality_report,
             }
             print(
                 f"  ✅ {quality_report.record_count} records, "
@@ -171,12 +179,12 @@ class BatchProcessor:
             processing_time = time.time() - start_time
             print(f"  ❌ Error: {str(e)}")
             return {
-                'success': False,
-                'file_path': file_path,
-                'processing_time': processing_time,
-                'error': str(e),
-                'record_count': 0,
-                'quality_score': 0
+                "success": False,
+                "file_path": file_path,
+                "processing_time": processing_time,
+                "error": str(e),
+                "record_count": 0,
+                "quality_score": 0,
             }
 
     def process_batch_with_analytics(self, file_paths: List[str]) -> ProcessingMetrics:
@@ -194,10 +202,10 @@ class BatchProcessor:
             if i < len(file_paths) - 1:
                 time.sleep(0.5)
         total_time = time.time() - start_time
-        successful_files = sum(1 for r in results if r['success'])
+        successful_files = sum(1 for r in results if r["success"])
         failed_files = len(results) - successful_files
-        total_records = sum(r['record_count'] for r in results if r['success'])
-        quality_scores = [r['quality_score'] for r in results if r['success']]
+        total_records = sum(r["record_count"] for r in results if r["success"])
+        quality_scores = [r["quality_score"] for r in results if r["success"]]
         avg_quality = statistics.mean(quality_scores) if quality_scores else 0
         throughput = total_records / total_time if total_time > 0 else 0
         metrics = ProcessingMetrics(
@@ -211,7 +219,7 @@ class BatchProcessor:
             ),
             data_quality_score=avg_quality,
             error_rate=failed_files / len(file_paths) * 100,
-            throughput=throughput
+            throughput=throughput,
         )
         self._print_analytics_summary(metrics, results)
         return metrics
@@ -235,16 +243,14 @@ class BatchProcessor:
         print(f"   • Throughput: {metrics.throughput:.1f} records/sec")
         print("\n🔍 Quality Metrics:")
         print(f"   • Avg Quality Score: {metrics.data_quality_score:.1f}/100")
-        quality_scores = [r['quality_score'] for r in results if r['success']]
+        quality_scores = [r["quality_score"] for r in results if r["success"]]
         if quality_scores:
             print(
                 f"   • Quality Range: {min(quality_scores):.1f} - "
                 f"{max(quality_scores):.1f}"
             )
             if len(quality_scores) > 1:
-                print(
-                    f"   • Quality Std Dev: {statistics.stdev(quality_scores):.1f}"
-                )
+                print(f"   • Quality Std Dev: {statistics.stdev(quality_scores):.1f}")
         if self.quality_reports:
             data_types = defaultdict(int)
             for report in self.quality_reports:
@@ -273,7 +279,7 @@ def get_all_odds_files_by_format():
         "decimal": [
             "odds/decimal/event_0089bc8773d8ce4ce20f9df90723cac9.json",
             # ... add more as needed ...
-        ]
+        ],
     }
 
 
@@ -294,14 +300,13 @@ def demonstrate_batch_processing():
     """Demonstrate batch processing with analytics for both odds formats."""
     print("\n🎯 Batch Processing with SerenadeFlow (American & Decimal Odds)")
     print("=" * 70)
-    processor = BatchProcessor(
-        bucket_url=BUCKET_BASE_URL,
-        max_concurrent=3
-    )
+    processor = BatchProcessor(bucket_url=BUCKET_BASE_URL, max_concurrent=3)
     tagged_files = get_tagged_odds_file_list()
     all_metrics = {}
     for odds_format in odds_files_by_format:
-        format_files = [f["file_path"] for f in tagged_files if f["odds_format"] == odds_format]
+        format_files = [
+            f["file_path"] for f in tagged_files if f["odds_format"] == odds_format
+        ]
         print(f"\n🎯 Processing {odds_format.upper()} Odds Format")
         print("-" * 50)
         metrics = processor.process_batch_with_analytics(format_files)

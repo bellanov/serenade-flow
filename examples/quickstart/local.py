@@ -9,7 +9,7 @@ Usage:
 
     pipeline.configure({args})
 
-3. Extract data 
+3. Extract data
 
     pipeline.extract()
 
@@ -22,7 +22,6 @@ Usage:
 
 from serenade_flow import pipeline
 
-
 print("\nExecuting Quickstart Example\n")
 
 # Configure ETL Pipeline
@@ -34,14 +33,13 @@ print("\nExecuting Quickstart Example\n")
 # 3. No authentication or credentials are required for public data.
 #
 # Note: Firestore integration will be supported via HTTP API in the future.
-pipeline.configure({
-    "data_source": "local",
-    "data_format": "json",
-    "data_source_path": [
-        "data/file_1",
-        "data_file_2"
-    ]
-})
+pipeline.configure(
+    {
+        "data_source": "local",
+        "data_format": "json",
+        "data_source_path": ["data/file_1", "data_file_2"],
+    }
+)
 
 # Extract
 raw_data = pipeline.extract()

@@ -1,8 +1,10 @@
 """Tests for PluginRegistry."""
 
-import pytest
 import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from serenade_flow.plugins import PluginRegistry
 
 

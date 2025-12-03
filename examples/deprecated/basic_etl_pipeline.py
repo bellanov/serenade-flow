@@ -66,9 +66,12 @@ def transform_data(data_frames: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFra
                 df["market_last_update"] = pd.to_datetime(df["market_last_update"])
 
             if "outcome_point" in df.columns:
-                df["outcome_point"] = pd.to_numeric(df["outcome_point"], errors="coerce")
+                df["outcome_point"] = pd.to_numeric(
+                    df["outcome_point"], errors="coerce"
+                )
 
             from datetime import datetime, timezone
+
             df["processed_at"] = datetime.now(timezone.utc)
             df["source_file"] = key
 
@@ -98,9 +101,7 @@ def assess_quality(data_frames: Dict[str, pd.DataFrame]) -> None:
 
 
 def load_data(
-    data: Dict[str, pd.DataFrame],
-    output_prefix: str,
-    output_format: str = "csv"
+    data: Dict[str, pd.DataFrame], output_prefix: str, output_format: str = "csv"
 ) -> str:
     """Load transformed data to output files."""
     print(f"\nLoading data ({output_format.upper()} format)...")
@@ -130,20 +131,20 @@ def main():
         "--data-dir",
         type=str,
         default="./data",
-        help="Directory containing JSON files to process (default: ./data)"
+        help="Directory containing JSON files to process (default: ./data)",
     )
     parser.add_argument(
         "--output-prefix",
         type=str,
         default="output",
-        help="Prefix for output files (default: output)"
+        help="Prefix for output files (default: output)",
     )
     parser.add_argument(
         "--format",
         type=str,
         choices=["csv", "parquet"],
         default="csv",
-        help="Output format (default: csv)"
+        help="Output format (default: csv)",
     )
 
     args = parser.parse_args()

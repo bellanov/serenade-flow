@@ -2,7 +2,6 @@
 
 from serenade_flow import pipeline
 
-
 print("\nExecuting Quickstart Example\n")
 
 # Configure ETL Pipeline
@@ -14,14 +13,16 @@ print("\nExecuting Quickstart Example\n")
 # 3. No authentication or credentials are required for public data.
 #
 # Note: Firestore integration will be supported via HTTP API in the future.
-pipeline.configure({
-    "data_source": "remote",
-    "data_source_path": (
-        "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
-        "odds/event_96395d8faab66cf7b72830844f66eda7.json"
-    ),
-    "data_format": "json"
-})
+pipeline.configure(
+    {
+        "data_source": "remote",
+        "data_source_path": (
+            "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
+            "odds/event_96395d8faab66cf7b72830844f66eda7.json"
+        ),
+        "data_format": "json",
+    }
+)
 
 # Extract
 raw_data = pipeline.extract()

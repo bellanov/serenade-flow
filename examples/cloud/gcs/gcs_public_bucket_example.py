@@ -4,16 +4,18 @@ This example demonstrates data extraction with validation, retry logic,
 and custom processing patterns for the organized bucket structure.
 """
 
-from serenade_flow import pipeline
 import time
-from typing import Dict, Any
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict
+
+from serenade_flow import pipeline
 
 
 @dataclass
 class DataExtractionResult:
     """Custom result container for extraction operations."""
+
     success: bool
     file_path: str
     record_count: int
@@ -36,7 +38,7 @@ class GCSDataExtractor:
         if not data:
             return False
         for key, value in data.items():
-            if hasattr(value, 'columns') and hasattr(value, 'shape'):
+            if hasattr(value, "columns") and hasattr(value, "shape"):
                 if value.shape[0] > 0:
                     return True
         return False
@@ -47,33 +49,35 @@ class GCSDataExtractor:
         for attempt in range(self.max_retries):
             try:
                 print(f"🔄 Attempt {attempt + 1}/{self.max_retries} for {file_path}")
-                pipeline.configure({
-                    "data_source": "remote",
-                    "data_source_path": self.bucket_url + file_path,
-                    "data_format": "json"
-                })
+                pipeline.configure(
+                    {
+                        "data_source": "remote",
+                        "data_source_path": self.bucket_url + file_path,
+                        "data_format": "json",
+                    }
+                )
                 data = pipeline.extract()
                 if self.validate_data_structure(data):
                     extraction_time = time.time() - start_time
                     record_count = sum(
-                        len(df) for df in data.values() if hasattr(df, 'shape')
+                        len(df) for df in data.values() if hasattr(df, "shape")
                     )
                     data_preview = {}
                     for key, df in data.items():
-                        if hasattr(df, 'head'):
+                        if hasattr(df, "head"):
                             data_preview[key] = {
-                                'shape': df.shape,
-                                'columns': list(df.columns),
-                                'sample_data': (
-                                    df.head(2).to_dict('records') if len(df) > 0 else []
-                                )
+                                "shape": df.shape,
+                                "columns": list(df.columns),
+                                "sample_data": (
+                                    df.head(2).to_dict("records") if len(df) > 0 else []
+                                ),
                             }
                     result = DataExtractionResult(
                         success=True,
                         file_path=file_path,
                         record_count=record_count,
                         extraction_time=extraction_time,
-                        data_preview=data_preview
+                        data_preview=data_preview,
                     )
                     print(
                         f"✅ Successfully extracted {record_count} records in "
@@ -95,7 +99,7 @@ class GCSDataExtractor:
                         file_path=file_path,
                         record_count=0,
                         extraction_time=extraction_time,
-                        error_message=str(e)
+                        error_message=str(e),
                     )
 
     def process_event_files(self, file_paths: list) -> Dict[str, DataExtractionResult]:
@@ -155,7 +159,7 @@ def get_all_odds_files_by_format():
         "decimal": [
             "odds/decimal/event_0089bc8773d8ce4ce20f9df90723cac9.json",
             # ... add more as needed ...
-        ]
+        ],
     }
 
 
@@ -175,14 +179,14 @@ def demonstrate_extraction():
     print("\n🎯 GCS Data Extraction with SerenadeFlow (American & Decimal Odds)")
     print("=" * 60)
     extractor = GCSDataExtractor(
-        bucket_url=BUCKET_BASE_URL,
-        max_retries=3,
-        retry_delay=1.5
+        bucket_url=BUCKET_BASE_URL, max_retries=3, retry_delay=1.5
     )
     tagged_files = get_tagged_odds_file_list()
     all_results = {}
     for odds_format in odds_files_by_format:
-        format_files = [f["file_path"] for f in tagged_files if f["odds_format"] == odds_format]
+        format_files = [
+            f["file_path"] for f in tagged_files if f["odds_format"] == odds_format
+        ]
         print(f"\n🎯 Extracting {odds_format.upper()} Odds Format")
         print("-" * 50)
         results = extractor.process_event_files(format_files)

@@ -1,7 +1,8 @@
 """Tests for DataQualityAssessor."""
 
-import pytest
 import pandas as pd
+import pytest
+
 from serenade_flow.quality import DataQualityAssessor
 
 
@@ -14,22 +15,26 @@ def assessor():
 @pytest.fixture
 def sample_dataframe():
     """Create a sample DataFrame for testing."""
-    return pd.DataFrame({
-        "id": [1, 2, 3, 4, 5],
-        "name": ["Alice", "Bob", "Charlie", "Alice", "Eve"],
-        "age": [25, 30, 35, None, 40],
-        "score": [85.5, 90.0, 88.5, 92.0, 87.0],
-    })
+    return pd.DataFrame(
+        {
+            "id": [1, 2, 3, 4, 5],
+            "name": ["Alice", "Bob", "Charlie", "Alice", "Eve"],
+            "age": [25, 30, 35, None, 40],
+            "score": [85.5, 90.0, 88.5, 92.0, 87.0],
+        }
+    )
 
 
 @pytest.fixture
 def sample_dataframe_with_duplicates():
     """Create a DataFrame with duplicate rows."""
-    return pd.DataFrame({
-        "id": [1, 2, 3, 1, 2],
-        "name": ["Alice", "Bob", "Charlie", "Alice", "Bob"],
-        "age": [25, 30, 35, 25, 30],
-    })
+    return pd.DataFrame(
+        {
+            "id": [1, 2, 3, 1, 2],
+            "name": ["Alice", "Bob", "Charlie", "Alice", "Bob"],
+            "age": [25, 30, 35, 25, 30],
+        }
+    )
 
 
 @pytest.mark.unit
@@ -76,10 +81,12 @@ def test_missing_values(assessor, sample_dataframe):
 @pytest.mark.unit
 def test_missing_values_no_missing(assessor):
     """Test missing_values with no missing data."""
-    df = pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["A", "B", "C"],
-    })
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", "B", "C"],
+        }
+    )
     result = assessor.missing_values({"test": df})
 
     assert result["test"]["total_missing"] == 0
@@ -143,11 +150,13 @@ def test_duplicate_detection_no_duplicates(assessor, sample_dataframe):
 @pytest.mark.unit
 def test_score_perfect_data(assessor):
     """Test score calculation with perfect data."""
-    df = pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["A", "B", "C"],
-        "value": [10, 20, 30],
-    })
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", "B", "C"],
+            "value": [10, 20, 30],
+        }
+    )
     data = {"test": df}
 
     missing = assessor.missing_values(data)
@@ -162,11 +171,13 @@ def test_score_perfect_data(assessor):
 @pytest.mark.unit
 def test_score_with_missing_values(assessor):
     """Test score calculation with missing values."""
-    df = pd.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["A", None, "C"],  # 1 missing value out of 9 total cells
-        "value": [10, 20, 30],
-    })
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", None, "C"],  # 1 missing value out of 9 total cells
+            "value": [10, 20, 30],
+        }
+    )
     data = {"test": df}
 
     missing = assessor.missing_values(data)
@@ -183,10 +194,12 @@ def test_score_with_missing_values(assessor):
 @pytest.mark.unit
 def test_score_with_duplicates(assessor):
     """Test score calculation with duplicates."""
-    df = pd.DataFrame({
-        "id": [1, 2, 3, 1, 2],
-        "name": ["A", "B", "C", "A", "B"],
-    })
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3, 1, 2],
+            "name": ["A", "B", "C", "A", "B"],
+        }
+    )
     data = {"test": df}
 
     missing = assessor.missing_values(data)

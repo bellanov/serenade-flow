@@ -4,11 +4,12 @@ This module tests that examples can be executed and produce expected results.
 Examples should be self-contained and testable.
 """
 
-import pytest
 import json
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 # Add examples directory to path for imports
 examples_dir = Path(__file__).parent.parent / "examples"
@@ -54,10 +55,10 @@ def test_basic_etl_pipeline_example(sample_data_directory, tmp_path, monkeypatch
     """Test that basic_etl_pipeline example."""
     # Import the example module
     from basic_etl_pipeline import (
-        extract_local_json_files,
-        transform_data,
-        load_data,
         assess_quality,
+        extract_local_json_files,
+        load_data,
+        transform_data,
     )
 
     # Test extraction
@@ -96,9 +97,11 @@ def test_basic_etl_pipeline_example(sample_data_directory, tmp_path, monkeypatch
 
 
 @pytest.mark.functional
-def test_basic_etl_pipeline_parquet_output(sample_data_directory, tmp_path, monkeypatch):
+def test_basic_etl_pipeline_parquet_output(
+    sample_data_directory, tmp_path, monkeypatch
+):
     """Test basic_etl_pipeline with Parquet output."""
-    from basic_etl_pipeline import extract_local_json_files, transform_data, load_data
+    from basic_etl_pipeline import extract_local_json_files, load_data, transform_data
 
     data_frames = extract_local_json_files(sample_data_directory)
     transformed = transform_data(data_frames)
@@ -170,9 +173,9 @@ def test_sports_odds_processing_example(sample_data_directory, tmp_path, monkeyp
     """Test that sports_odds_processing example works correctly."""
     from sports_odds_processing import (
         extract_sports_odds_from_local,
+        flatten_sports_event_record,
         transform_sports_odds_data,
         validate_sports_event_data,
-        flatten_sports_event_record,
     )
 
     # Test extraction
@@ -205,10 +208,7 @@ def test_sports_odds_processing_example(sample_data_directory, tmp_path, monkeyp
 @pytest.mark.functional
 def test_sports_odds_processing_validation():
     """Test sports odds validation functions."""
-    from sports_odds_processing import (
-        validate_sports_event_data,
-        _validate_outcome,
-    )
+    from sports_odds_processing import _validate_outcome, validate_sports_event_data
 
     # Test valid data
     valid_data = {
