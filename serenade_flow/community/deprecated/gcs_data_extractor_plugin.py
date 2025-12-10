@@ -1,6 +1,5 @@
 import time
-
-from typing import Dict, Any
+from typing import Any, Dict
 
 from serenade_flow import pipeline
 

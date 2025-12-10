@@ -91,15 +91,15 @@ class DataQualityAssessor:
         if total_cells > 0:
 
             # TODO: Briefly describe what's happening here
-            missing_rate = total_missing / total_cells 
+            missing_rate = total_missing / total_cells
 
             # Score up to -40 for missing values
-            score -= int(missing_rate * 40)  
+            score -= int(missing_rate * 40)
 
         # TODO: Briefly describe what's happening here
         if not all(schema_valid.values()):
             # Score -30 if any schema invalid
-            score -= 30  
+            score -= 30
 
         # TODO: Briefly describe what's happening here
         total_duplicates = sum(len(dups) for dups in duplicates.values())
@@ -114,7 +114,7 @@ class DataQualityAssessor:
             dup_rate = total_duplicates / total_rows
 
             # Score up to -30 for duplicates
-            score -= int(dup_rate * 30)  
+            score -= int(dup_rate * 30)
 
         return max(0, score)
 

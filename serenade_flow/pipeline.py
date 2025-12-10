@@ -55,7 +55,10 @@ SPORTS_EVENT_SCHEMA = {
                             "type": "object",
                             "properties": {
                                 "key": {"type": "string"},
-                                "last_update": {"type": "string", "format": "date-time"},
+                                "last_update": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                },
                                 "outcomes": {
                                     "type": "array",
                                     "items": {
@@ -289,7 +292,9 @@ def transform(data_frames: dict) -> dict:
                     "market_last_update",
                     "outcome_point",
                 ]
-                missing_columns = [col for col in required_columns if col not in df.columns]
+                missing_columns = [
+                    col for col in required_columns if col not in df.columns
+                ]
                 if missing_columns:
                     logging.warning(f"Missing columns in {key}: {missing_columns}")
                     continue
@@ -301,10 +306,14 @@ def transform(data_frames: dict) -> dict:
                     df["commence_time"] = pd.to_datetime(df["commence_time"])
                     df["market_last_update"] = pd.to_datetime(df["market_last_update"])
                 except Exception as e:
-                    logging.error(f"Error converting datetime fields in {key}: {str(e)}")
+                    logging.error(
+                        f"Error converting datetime fields in {key}: {str(e)}"
+                    )
                     continue
 
-                df["outcome_point"] = pd.to_numeric(df["outcome_point"], errors="coerce")
+                df["outcome_point"] = pd.to_numeric(
+                    df["outcome_point"], errors="coerce"
+                )
                 df["processed_at"] = datetime.now(timezone.utc)
                 df["source_file"] = key
                 transformed_data[key] = df
