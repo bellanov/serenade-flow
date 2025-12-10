@@ -4,11 +4,16 @@ This file defines the DataQualityAssesor class. It defines a series of functions
 for assessing data quality for pipeline runs. It also provides scoring, missing value detection,
 schema validation, and duplicate detection.
 
-TODO: Add typical usage documentation
 Typical usage example:
 
-  foo = ClassFoo()
-  bar = foo.function_bar()
+  from serenade_flow.quality import DataQualityAssessor
+  import pandas as pd
+
+  assessor = DataQualityAssessor()
+  df = pd.DataFrame({"col1": [1, 2, None], "col2": ["a", "b", "c"]})
+  schema = {"col1": "float64", "col2": "object"}
+  report = assessor.assess(df, schema)
+  print(f"Quality score: {report['score']}")
 """
 
 from typing import Any
@@ -34,26 +39,27 @@ class DataQualityAssessor:
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: TODO: Add description of argument.
+            schema: Optional schema dict mapping column names to expected dtypes.
 
         Returns:
-            TODO: Describe the value being returned.
+            A dictionary with quality assessment results containing 'score',
+            'missing_values', 'schema_validation', and 'duplicates'.
         """
 
         # Process individual DataFrame as input
         if isinstance(data, pd.DataFrame):
             data = {"data": data}
 
-        # TODO: Briefly describe what's happening here
+        # Detect missing values across all DataFrames
         missing = self.missing_values(data)
 
-        # TODO: Briefly describe what's happening here
+        # Validate schema compliance for all DataFrames
         schema_valid = self.schema_validation(data, schema)
 
-        # TODO: Briefly describe what's happening here
+        # Identify duplicate rows in all DataFrames
         duplicates = self.duplicate_detection(data)
 
-        # TODO: Briefly describe what's happening here
+        # Calculate overall quality score based on all checks
         score = self.score(data, schema, missing, schema_valid, duplicates)
 
         return {
@@ -65,56 +71,56 @@ class DataQualityAssessor:
 
     def score(self, data, schema, missing: dict[str, Any], schema_valid, duplicates):
         """
-        TODO: Add function description.
+        Calculate a quality score from 0-100 based on missing values, schema validation, and duplicates.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: TODO: Add description of argument.
-            missing: TODO: Add description of argument.
-            schema_valid: TODO: Add description of argument.
-            duplicates: TODO: Add description of argument.
+            schema: Schema dict mapping column names to expected dtypes.
+            missing: Dictionary of missing value statistics from missing_values().
+            schema_valid: Dictionary mapping DataFrame names to validation booleans.
+            duplicates: Dictionary mapping DataFrame names to lists of duplicate row indices.
 
         Returns:
-            TODO: Describe the value being returned.
+            An integer quality score from 0 to 100.
         """
 
         score = 100
         total_cells = 0
         total_missing = 0
 
-        # TODO: Briefly describe this block
+        # Aggregate missing value statistics across all DataFrames
         for miss in missing.values():
 
-            # TODO: Briefly describe what's happening here
+            # Sum total missing cells across all DataFrames
             total_missing += miss["total_missing"]
 
-            # TODO: Briefly describe what's happening here
+            # Sum total cells across all DataFrames
             total_cells += miss["total_cells"]
 
-        # TODO: Briefly describe this block
+        # Calculate missing value penalty if there are any cells
         if total_cells > 0:
 
-            # TODO: Briefly describe what's happening here
+            # Compute the proportion of missing values
             missing_rate = total_missing / total_cells
 
             # Score up to -40 for missing values
             score -= int(missing_rate * 40)
 
-        # TODO: Briefly describe what's happening here
+        # Apply penalty if any DataFrame fails schema validation
         if not all(schema_valid.values()):
             # Score -30 if any schema invalid
             score -= 30
 
-        # TODO: Briefly describe what's happening here
+        # Count total number of duplicate rows across all DataFrames
         total_duplicates = sum(len(dups) for dups in duplicates.values())
 
-        # TODO: Briefly describe what's happening here
+        # Count total number of rows across all DataFrames
         total_rows = sum(len(df) for df in data.values())
 
-        # TODO: Briefly describe this block
+        # Calculate duplicate penalty if there are rows and duplicates
         if total_rows > 0 and total_duplicates > 0:
 
-            # TODO: Briefly describe what's happening here
+            # Compute the proportion of duplicate rows
             dup_rate = total_duplicates / total_rows
 
             # Score up to -30 for duplicates
@@ -126,30 +132,31 @@ class DataQualityAssessor:
         self, data: dict[str, pd.DataFrame] | pd.DataFrame
     ) -> dict[str, Any]:
         """
-        TODO: Add function description.
+        Detect and count missing values in DataFrames.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
 
         Returns:
-            TODO: Describe the value being returned.
+            A dictionary mapping DataFrame names to missing value statistics,
+            including total_missing, total_cells, and missing_per_column.
         """
 
         result = {}
 
-        # TODO: Briefly describe this block
+        # Process each DataFrame in the input
         for fname, df in data.items():
 
-            # TODO: Briefly describe this block
+            # Only process valid DataFrame objects
             if isinstance(df, pd.DataFrame):
 
-                # TODO: Briefly describe what's happening here
+                # Count total number of cells in the DataFrame
                 total_cells = df.size
 
-                # TODO: Briefly describe what's happening here
+                # Count total number of missing values across all columns
                 total_missing = df.isnull().sum().sum()
 
-                # TODO: Briefly describe what's happening here
+                # Count missing values per column as a dictionary
                 missing_per_col = df.isnull().sum().to_dict()
 
                 result[fname] = {
@@ -162,50 +169,50 @@ class DataQualityAssessor:
 
     def schema_validation(self, data, schema):
         """
-        TODO: Add function description.
+        Validate that DataFrames conform to the expected schema.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: TODO: Add description of argument.
+            schema: Dictionary mapping column names to expected pandas dtypes.
 
         Returns:
-            TODO: Describe the value being returned.
+            A dictionary mapping DataFrame names to boolean validation results.
         """
 
         result = {}
 
-        # TODO: Briefly describe this block
+        # If no schema provided, all DataFrames are considered valid
         if not schema:
 
             for fname in data:
 
-                # TODO: Briefly describe what's happening here
+                # Mark all DataFrames as valid when no schema is specified
                 result[fname] = True
 
             return result
 
-        # TODO: Briefly describe this block
+        # Validate each DataFrame against the schema
         for fname, df in data.items():
 
-            # TODO: Briefly describe this block
+            # Non-DataFrame objects fail validation
             if not isinstance(df, pd.DataFrame):
 
-                # TODO: Briefly describe what's happening here
+                # Mark invalid if not a DataFrame
                 result[fname] = False
 
                 continue
 
             valid = True
 
-            # TODO: Briefly describe this block
+            # Check each column in the schema
             for col, dtype in schema.items():
 
-                # TODO: Briefly describe this block
+                # Fail if required column is missing
                 if col not in df.columns:
                     valid = False
                     break
 
-                # TODO: Briefly describe this block
+                # Fail if column dtype doesn't match expected dtype
                 if dtype and not pd.api.types.is_dtype_equal(df[col].dtype, dtype):
                     valid = False
                     break
@@ -216,27 +223,27 @@ class DataQualityAssessor:
 
     def duplicate_detection(self, data):
         """
-        TODO: Add function description.
+        Detect duplicate rows in DataFrames.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
 
         Returns:
-            TODO: Describe the value being returned.
+            A dictionary mapping DataFrame names to lists of duplicate row indices.
         """
 
         result = {}
 
-        # TODO: Briefly describe this block
+        # Process each DataFrame in the input
         for fname, df in data.items():
 
-            # TODO: Briefly describe this block
+            # Only process valid DataFrame objects
             if isinstance(df, pd.DataFrame):
 
-                # TODO: Briefly describe what's happening here
+                # Identify duplicate rows using pandas duplicated()
                 dups = df.duplicated()
 
-                # TODO: Briefly describe what's happening here
+                # Store list of indices for duplicate rows
                 result[fname] = df.index[dups].tolist()
 
         return result
