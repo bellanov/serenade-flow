@@ -203,7 +203,6 @@ class DataQualityAssessor:
                 # TODO: Briefly describe this block
                 if col not in df.columns:
                     valid = False
-
                     break
 
                 # TODO: Briefly describe this block
