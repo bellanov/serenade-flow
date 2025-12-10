@@ -11,6 +11,8 @@ Typical usage example:
   bar = foo.function_bar()
 """
 
+from typing import Any
+
 import pandas as pd
 
 
@@ -24,7 +26,9 @@ class DataQualityAssessor:
         """Initialize Class Variables."""
         pass
 
-    def assess(self, data, schema=None):
+    def assess(
+        self, data: dict[str, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any] = {}
+    ) -> dict[str, Any]:
         """
         Run all quality checks and return a report dict.
 
@@ -59,7 +63,7 @@ class DataQualityAssessor:
             "duplicates": duplicates,
         }
 
-    def score(self, data, schema, missing, schema_valid, duplicates):
+    def score(self, data, schema, missing: dict[str, Any], schema_valid, duplicates):
         """
         TODO: Add function description.
 
@@ -79,7 +83,7 @@ class DataQualityAssessor:
         total_missing = 0
 
         # TODO: Briefly describe this block
-        for fname, miss in missing.items():
+        for miss in missing.values():
 
             # TODO: Briefly describe what's happening here
             total_missing += miss["total_missing"]
@@ -118,7 +122,9 @@ class DataQualityAssessor:
 
         return max(0, score)
 
-    def missing_values(self, data):
+    def missing_values(
+        self, data: dict[str, pd.DataFrame] | pd.DataFrame
+    ) -> dict[str, Any]:
         """
         TODO: Add function description.
 
