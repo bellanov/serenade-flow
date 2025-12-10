@@ -27,7 +27,7 @@ class DataQualityAssessor:
         pass
 
     def assess(
-        self, data: dict[str, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any] | None
+        self, data: dict[str, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any] = {}
     ) -> dict[str, Any]:
         """
         Run all quality checks and return a report dict.
