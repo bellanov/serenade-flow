@@ -73,7 +73,7 @@ class DataQualityAssessor:
 
     def score(
         self,
-        data: dict[Hashable, pd.DataFrame] | pd.DataFrame,
+        data: dict[Hashable, pd.DataFrame],
         schema: dict[str, Any],
         missing: dict[Hashable, Any],
         schema_valid: dict[Hashable, bool],
@@ -138,7 +138,7 @@ class DataQualityAssessor:
         return max(0, score)
 
     def missing_values(
-        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame
+        self, data: dict[Hashable, pd.DataFrame]
     ) -> dict[Hashable, Any]:
         """
         Detect and count missing values in DataFrames.
@@ -156,28 +156,25 @@ class DataQualityAssessor:
         # Process each DataFrame in the input
         for fname, df in data.items():
 
-            # Only process valid DataFrame objects
-            if isinstance(df, pd.DataFrame):
+            # Count total number of cells in the DataFrame
+            total_cells = df.size
 
-                # Count total number of cells in the DataFrame
-                total_cells = df.size
+            # Count total number of missing values across all columns
+            total_missing = df.isnull().sum().sum()
 
-                # Count total number of missing values across all columns
-                total_missing = df.isnull().sum().sum()
+            # Count missing values per column as a dictionary
+            missing_per_col = df.isnull().sum().to_dict()
 
-                # Count missing values per column as a dictionary
-                missing_per_col = df.isnull().sum().to_dict()
-
-                result[fname] = {
-                    "total_missing": int(total_missing),
-                    "total_cells": int(total_cells),
-                    "missing_per_column": missing_per_col,
-                }
+            result[fname] = {
+                "total_missing": int(total_missing),
+                "total_cells": int(total_cells),
+                "missing_per_column": missing_per_col,
+            }
 
         return result
 
     def schema_validation(
-        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any]
+        self, data: dict[Hashable, pd.DataFrame], schema: dict[str, Any]
     ) -> dict[Hashable, Any]:
         """
         Validate that DataFrames conform to the expected schema.
@@ -205,14 +202,6 @@ class DataQualityAssessor:
         # Validate each DataFrame against the schema
         for fname, df in data.items():
 
-            # Non-DataFrame objects fail validation
-            if not isinstance(df, pd.DataFrame):
-
-                # Mark invalid if not a DataFrame
-                result[fname] = False
-
-                continue
-
             valid = True
 
             # Check each column in the schema
@@ -233,7 +222,7 @@ class DataQualityAssessor:
         return result
 
     def duplicate_detection(
-        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame
+        self, data: dict[Hashable, pd.DataFrame]
     ) -> dict[Hashable, Any]:
         """
         Detect duplicate rows in DataFrames.
@@ -250,13 +239,10 @@ class DataQualityAssessor:
         # Process each DataFrame in the input
         for fname, df in data.items():
 
-            # Only process valid DataFrame objects
-            if isinstance(df, pd.DataFrame):
+            # Identify duplicate rows using pandas duplicated()
+            dups = df.duplicated()
 
-                # Identify duplicate rows using pandas duplicated()
-                dups = df.duplicated()
-
-                # Store list of indices for duplicate rows
-                result[fname] = df.index[dups].tolist()
+            # Store list of indices for duplicate rows
+            result[fname] = df.index[dups].tolist()
 
         return result
