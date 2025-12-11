@@ -16,7 +16,7 @@ Typical usage example:
   print(f"Quality score: {report['score']}")
 """
 
-from typing import Any
+from typing import Any, Hashable
 
 import pandas as pd
 
@@ -32,14 +32,16 @@ class DataQualityAssessor:
         pass
 
     def assess(
-        self, data: dict[str, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any] = {}
+        self,
+        data: dict[Hashable, pd.DataFrame] | pd.DataFrame,
+        schema: dict[str, Any] = {},
     ) -> dict[str, Any]:
         """
         Run all quality checks and return a report dict.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: Optional schema dict mapping column names to expected dtypes.
+            schema: Optional schema dict mapping column names to expected data types (dtypes).
 
         Returns:
             A dictionary with quality assessment results containing 'score',
@@ -69,13 +71,20 @@ class DataQualityAssessor:
             "duplicates": duplicates,
         }
 
-    def score(self, data, schema, missing: dict[str, Any], schema_valid, duplicates):
+    def score(
+        self,
+        data: dict[Hashable, pd.DataFrame] | pd.DataFrame,
+        schema: dict[str, Any],
+        missing: dict[Hashable, Any],
+        schema_valid: dict[Hashable, bool],
+        duplicates: dict[Hashable, list[int]],
+    ):
         """
         Calculate a quality score from 0-100 based on missing values, schema validation, and duplicates.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: Schema dict mapping column names to expected dtypes.
+            schema: Schema dict mapping column names to expected data types (dtypes).
             missing: Dictionary of missing value statistics from missing_values().
             schema_valid: Dictionary mapping DataFrame names to validation booleans.
             duplicates: Dictionary mapping DataFrame names to lists of duplicate row indices.
@@ -129,8 +138,8 @@ class DataQualityAssessor:
         return max(0, score)
 
     def missing_values(
-        self, data: dict[str, pd.DataFrame] | pd.DataFrame
-    ) -> dict[str, Any]:
+        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame
+    ) -> dict[Hashable, Any]:
         """
         Detect and count missing values in DataFrames.
 
@@ -142,7 +151,7 @@ class DataQualityAssessor:
             including total_missing, total_cells, and missing_per_column.
         """
 
-        result = {}
+        result: dict[Hashable, Any] = {}
 
         # Process each DataFrame in the input
         for fname, df in data.items():
@@ -167,19 +176,21 @@ class DataQualityAssessor:
 
         return result
 
-    def schema_validation(self, data, schema):
+    def schema_validation(
+        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame, schema: dict[str, Any]
+    ) -> dict[Hashable, Any]:
         """
         Validate that DataFrames conform to the expected schema.
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: Dictionary mapping column names to expected pandas dtypes.
+            schema: Dictionary mapping column names to expected pandas data types (dtypes).
 
         Returns:
             A dictionary mapping DataFrame names to boolean validation results.
         """
 
-        result = {}
+        result: dict[Hashable, Any] = {}
 
         # If no schema provided, all DataFrames are considered valid
         if not schema:
@@ -221,7 +232,9 @@ class DataQualityAssessor:
 
         return result
 
-    def duplicate_detection(self, data):
+    def duplicate_detection(
+        self, data: dict[Hashable, pd.DataFrame] | pd.DataFrame
+    ) -> dict[Hashable, Any]:
         """
         Detect duplicate rows in DataFrames.
 
@@ -232,7 +245,7 @@ class DataQualityAssessor:
             A dictionary mapping DataFrame names to lists of duplicate row indices.
         """
 
-        result = {}
+        result: dict[Hashable, Any] = {}
 
         # Process each DataFrame in the input
         for fname, df in data.items():
