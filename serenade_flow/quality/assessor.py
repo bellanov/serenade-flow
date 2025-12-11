@@ -74,6 +74,7 @@ class DataQualityAssessor:
     def score(
         self,
         data: dict[Hashable, pd.DataFrame],
+        # TODO: Is schema needed here? It isn't being accessed.
         schema: dict[str, Any],
         missing: dict[Hashable, Any],
         schema_valid: dict[Hashable, bool],
