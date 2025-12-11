@@ -163,7 +163,7 @@ def test_score_perfect_data(assessor):
     schema_valid = assessor.schema_validation(data, None)
     duplicates = assessor.duplicate_detection(data)
 
-    score = assessor.score(data, None, missing, schema_valid, duplicates)
+    score = assessor.score(data, missing, schema_valid, duplicates)
 
     assert score == 100
 
@@ -184,7 +184,7 @@ def test_score_with_missing_values(assessor):
     schema_valid = assessor.schema_validation(data, None)
     duplicates = assessor.duplicate_detection(data)
 
-    score = assessor.score(data, None, missing, schema_valid, duplicates)
+    score = assessor.score(data, missing, schema_valid, duplicates)
 
     # Should be less than 100 due to missing values
     assert score < 100
@@ -206,7 +206,7 @@ def test_score_with_duplicates(assessor):
     schema_valid = assessor.schema_validation(data, None)
     duplicates = assessor.duplicate_detection(data)
 
-    score = assessor.score(data, None, missing, schema_valid, duplicates)
+    score = assessor.score(data, missing, schema_valid, duplicates)
 
     # Should be less than 100 due to duplicates
     assert score < 100
@@ -223,7 +223,7 @@ def test_score_with_invalid_schema(assessor, sample_dataframe):
     schema_valid = assessor.schema_validation(data, schema)
     duplicates = assessor.duplicate_detection(data)
 
-    score = assessor.score(data, schema, missing, schema_valid, duplicates)
+    score = assessor.score(data, missing, schema_valid, duplicates)
 
     # Should be less than 100 due to invalid schema
     assert score < 100
@@ -268,3 +268,139 @@ def test_duplicate_detection_empty_dataframe(assessor):
 
     assert "test" in result
     assert isinstance(result["test"], list)
+
+
+@pytest.mark.unit
+def test_schema_validation_dtype_mismatch(assessor):
+    """Test schema_validation with dtype mismatch (covers lines 217-218)."""
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", "B", "C"],
+            "age": [25, 30, 35],
+        }
+    )
+    # Schema expects int64 for age, but DataFrame has int64 (should match)
+    # Let's create a mismatch by expecting float64 when we have int64
+    schema = {
+        "id": "int64",
+        "name": "object",
+        "age": "float64",  # Mismatch: DataFrame has int64, schema expects float64
+    }
+    result = assessor.schema_validation({"test": df}, schema)
+
+    assert "test" in result
+    # Should be False due to dtype mismatch
+    assert result["test"] is False
+
+
+@pytest.mark.unit
+def test_schema_validation_dtype_match(assessor):
+    """Test schema_validation with matching dtypes."""
+    df = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", "B", "C"],
+            "age": [25.0, 30.0, 35.0],  # float64
+        }
+    )
+    schema = {
+        "id": "int64",
+        "name": "object",
+        "age": "float64",  # Matches DataFrame dtype
+    }
+    result = assessor.schema_validation({"test": df}, schema)
+
+    assert "test" in result
+    assert result["test"] is True
+
+
+@pytest.mark.unit
+def test_assess_with_multiple_dataframes(assessor):
+    """Test assess method with multiple DataFrames in a dictionary."""
+    df1 = pd.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["A", "B", "C"],
+        }
+    )
+    df2 = pd.DataFrame(
+        {
+            "id": [4, 5, 6],
+            "value": [10, 20, 30],
+        }
+    )
+    data = {"file1": df1, "file2": df2}
+    report = assessor.assess(data)
+
+    assert "score" in report
+    assert "file1" in report["missing_values"]
+    assert "file2" in report["missing_values"]
+    assert "file1" in report["schema_validation"]
+    assert "file2" in report["schema_validation"]
+    assert "file1" in report["duplicates"]
+    assert "file2" in report["duplicates"]
+
+
+@pytest.mark.unit
+def test_missing_values_multiple_dataframes(assessor):
+    """Test missing_values with multiple DataFrames."""
+    df1 = pd.DataFrame({"col1": [1, 2, None]})
+    df2 = pd.DataFrame({"col2": [None, "B", "C"]})
+    data = {"df1": df1, "df2": df2}
+
+    result = assessor.missing_values(data)
+
+    assert "df1" in result
+    assert "df2" in result
+    assert result["df1"]["total_missing"] == 1
+    assert result["df2"]["total_missing"] == 1
+
+
+@pytest.mark.unit
+def test_schema_validation_multiple_dataframes(assessor):
+    """Test schema_validation with multiple DataFrames."""
+    df1 = pd.DataFrame({"id": [1, 2], "name": ["A", "B"]})
+    df2 = pd.DataFrame({"id": [3, 4], "value": [10, 20]})
+    data = {"df1": df1, "df2": df2}
+    schema = {"id": "int64", "name": "object"}
+
+    result = assessor.schema_validation(data, schema)
+
+    assert "df1" in result
+    assert "df2" in result
+    # df1 should pass (has id and name)
+    assert result["df1"] is True
+    # df2 should fail (missing name column)
+    assert result["df2"] is False
+
+
+@pytest.mark.unit
+def test_duplicate_detection_multiple_dataframes(assessor):
+    """Test duplicate_detection with multiple DataFrames."""
+    df1 = pd.DataFrame({"id": [1, 2, 1]})  # Has duplicates
+    df2 = pd.DataFrame({"id": [3, 4, 5]})  # No duplicates
+    data = {"df1": df1, "df2": df2}
+
+    result = assessor.duplicate_detection(data)
+
+    assert "df1" in result
+    assert "df2" in result
+    assert len(result["df1"]) > 0  # Has duplicates
+    assert len(result["df2"]) == 0  # No duplicates
+
+
+@pytest.mark.unit
+def test_score_multiple_dataframes(assessor):
+    """Test score calculation with multiple DataFrames."""
+    df1 = pd.DataFrame({"id": [1, 2, 3]})
+    df2 = pd.DataFrame({"id": [4, 5, 6]})
+    data = {"df1": df1, "df2": df2}
+
+    missing = assessor.missing_values(data)
+    schema_valid = assessor.schema_validation(data, None)
+    duplicates = assessor.duplicate_detection(data)
+
+    score = assessor.score(data, missing, schema_valid, duplicates)
+
+    assert score == 100  # Perfect data across both DataFrames

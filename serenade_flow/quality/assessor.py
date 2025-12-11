@@ -62,7 +62,7 @@ class DataQualityAssessor:
         duplicates = self.duplicate_detection(data)
 
         # Calculate overall quality score based on all checks
-        score = self.score(data, schema, missing, schema_valid, duplicates)
+        score = self.score(data, missing, schema_valid, duplicates)
 
         return {
             "score": score,
@@ -74,8 +74,6 @@ class DataQualityAssessor:
     def score(
         self,
         data: dict[Hashable, pd.DataFrame],
-        # TODO: Is schema needed here? It isn't being accessed.
-        schema: dict[str, Any],
         missing: dict[Hashable, Any],
         schema_valid: dict[Hashable, bool],
         duplicates: dict[Hashable, list[int]],
@@ -85,7 +83,6 @@ class DataQualityAssessor:
 
         Args:
             data: A DataFrame or a dictionary of DataFrames.
-            schema: Schema dict mapping column names to expected data types (dtypes).
             missing: Dictionary of missing value statistics from missing_values().
             schema_valid: Dictionary mapping DataFrame names to validation booleans.
             duplicates: Dictionary mapping DataFrame names to lists of duplicate row indices.
