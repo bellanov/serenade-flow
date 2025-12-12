@@ -33,9 +33,9 @@ class DataQualityAssessor:
 
     def assess(
         self,
-        data: dict[Hashable, pd.DataFrame] | pd.DataFrame,
+        data: dict[str, pd.DataFrame] | pd.DataFrame,
         schema: dict[str, Any] = {},
-    ) -> dict[str, Any]:
+    ) -> dict[Hashable, Any]:
         """
         Run all quality checks and return a report dict.
 
@@ -73,7 +73,7 @@ class DataQualityAssessor:
 
     def score(
         self,
-        data: dict[Hashable, pd.DataFrame],
+        data: dict[str, pd.DataFrame],
         missing: dict[Hashable, Any],
         schema_valid: dict[Hashable, bool],
         duplicates: dict[Hashable, list[int]],
@@ -135,9 +135,7 @@ class DataQualityAssessor:
 
         return max(0, score)
 
-    def missing_values(
-        self, data: dict[Hashable, pd.DataFrame]
-    ) -> dict[Hashable, Any]:
+    def missing_values(self, data: dict[str, pd.DataFrame]) -> dict[Hashable, Any]:
         """
         Detect and count missing values in DataFrames.
 
@@ -161,7 +159,7 @@ class DataQualityAssessor:
             total_missing = df.isnull().sum().sum()
 
             # Count missing values per column as a dictionary
-            missing_per_col = df.isnull().sum().to_dict()
+            missing_per_col = df.isnull().sum().to_dict()  # type: ignore
 
             result[fname] = {
                 "total_missing": int(total_missing),
@@ -172,7 +170,7 @@ class DataQualityAssessor:
         return result
 
     def schema_validation(
-        self, data: dict[Hashable, pd.DataFrame], schema: dict[str, Any]
+        self, data: dict[str, pd.DataFrame], schema: dict[str, Any]
     ) -> dict[Hashable, Any]:
         """
         Validate that DataFrames conform to the expected schema.
@@ -211,7 +209,7 @@ class DataQualityAssessor:
                     break
 
                 # Fail if column dtype doesn't match expected dtype
-                if dtype and not pd.api.types.is_dtype_equal(df[col].dtype, dtype):
+                if dtype and not pd.api.types.is_dtype_equal(df[col].dtype, dtype):  # type: ignore
                     valid = False
                     break
 
@@ -219,9 +217,7 @@ class DataQualityAssessor:
 
         return result
 
-    def duplicate_detection(
-        self, data: dict[Hashable, pd.DataFrame]
-    ) -> dict[Hashable, Any]:
+    def duplicate_detection(self, data: dict[str, pd.DataFrame]) -> dict[Hashable, Any]:
         """
         Detect duplicate rows in DataFrames.
 
