@@ -44,8 +44,8 @@ def test_assess_with_dataframe(
     """Test assess method with a single DataFrame.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     report = assessor.assess(sample_dataframe)
 
@@ -66,8 +66,8 @@ def test_assess_with_dict(
     """Test assess method with a dict of DataFrames.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     data = {"file1": sample_dataframe}
     report = assessor.assess(data)
@@ -82,8 +82,8 @@ def test_missing_values(assessor: DataQualityAssessor, sample_dataframe: pd.Data
     """Test missing_values detection.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     result = assessor.missing_values({"test": sample_dataframe})
 
@@ -102,7 +102,7 @@ def test_missing_values_no_missing(assessor: DataQualityAssessor):
     """Test missing_values with no missing data.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -122,8 +122,8 @@ def test_schema_validation_no_schema(
     """Test schema_validation without providing a schema.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     result = assessor.schema_validation({"test": sample_dataframe}, None)  # type: ignore
 
@@ -138,8 +138,8 @@ def test_schema_validation_valid_schema(
     """Test schema_validation with a valid schema.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     schema = {
         "id": "int64",
@@ -159,8 +159,8 @@ def test_schema_validation_invalid_schema(
     """Test schema_validation with an invalid schema.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     schema = {
         "id": "int64",
@@ -179,8 +179,8 @@ def test_duplicate_detection(
     """Test duplicate_detection.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe_with_duplicates: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe_with_duplicates: Sample DataFrame containing duplicate rows.
     """
     result = assessor.duplicate_detection({"test": sample_dataframe_with_duplicates})
 
@@ -196,8 +196,8 @@ def test_duplicate_detection_no_duplicates(
     """Test duplicate_detection with no duplicates.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     result = assessor.duplicate_detection({"test": sample_dataframe})
 
@@ -210,7 +210,7 @@ def test_score_perfect_data(assessor: DataQualityAssessor):
     """Test score calculation with perfect data.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -235,7 +235,7 @@ def test_score_with_missing_values(assessor: DataQualityAssessor):
     """Test score calculation with missing values.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -262,7 +262,7 @@ def test_score_with_duplicates(assessor: DataQualityAssessor):
     """Test score calculation with duplicates.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -290,8 +290,8 @@ def test_score_with_invalid_schema(
     """Test score calculation with invalid schema.
 
     Args:
-        assessor: TODO: Add description of parameter.
-        sample_dataframe_with_duplicates: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
+        sample_dataframe: Sample DataFrame with test data.
     """
     data = {"test": sample_dataframe}
     schema = {"nonexistent": "object"}
@@ -312,7 +312,7 @@ def test_assess_empty_dataframe(assessor: DataQualityAssessor):
     """Test assess with an empty DataFrame.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame()
     report = assessor.assess(df)
@@ -326,7 +326,7 @@ def test_missing_values_empty_dataframe(assessor: DataQualityAssessor):
     """Test missing_values with empty DataFrame.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame()
     result = assessor.missing_values({"test": df})
@@ -341,7 +341,7 @@ def test_schema_validation_non_dataframe(assessor: DataQualityAssessor):
     """Test schema_validation with non-DataFrame input.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     result = assessor.schema_validation({"test": "not a dataframe"}, None)  # type: ignore
 
@@ -354,7 +354,7 @@ def test_duplicate_detection_empty_dataframe(assessor: DataQualityAssessor):
     """Test duplicate_detection with empty DataFrame.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame()
     result = assessor.duplicate_detection({"test": df})
@@ -368,7 +368,7 @@ def test_schema_validation_dtype_mismatch(assessor: DataQualityAssessor):
     """Test schema_validation with dtype mismatch (covers lines 217-218).
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -396,7 +396,7 @@ def test_schema_validation_dtype_match(assessor: DataQualityAssessor):
     """Test schema_validation with matching dtypes.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df = pd.DataFrame(
         {
@@ -421,7 +421,7 @@ def test_assess_with_multiple_dataframes(assessor: DataQualityAssessor):
     """Test assess method with multiple DataFrames in a dictionary.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df1 = pd.DataFrame(
         {
@@ -452,7 +452,7 @@ def test_missing_values_multiple_dataframes(assessor: DataQualityAssessor):
     """Test missing_values with multiple DataFrames.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df1 = pd.DataFrame({"col1": [1, 2, None]})
     df2 = pd.DataFrame({"col2": [None, "B", "C"]})
@@ -471,7 +471,7 @@ def test_schema_validation_multiple_dataframes(assessor: DataQualityAssessor):
     """Test schema_validation with multiple DataFrames.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df1 = pd.DataFrame({"id": [1, 2], "name": ["A", "B"]})
     df2 = pd.DataFrame({"id": [3, 4], "value": [10, 20]})
@@ -493,7 +493,7 @@ def test_duplicate_detection_multiple_dataframes(assessor: DataQualityAssessor):
     """Test duplicate_detection with multiple DataFrames.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df1 = pd.DataFrame({"id": [1, 2, 1]})  # Has duplicates
     df2 = pd.DataFrame({"id": [3, 4, 5]})  # No duplicates
@@ -512,7 +512,7 @@ def test_score_multiple_dataframes(assessor: DataQualityAssessor):
     """Test score calculation with multiple DataFrames.
 
     Args:
-        assessor: TODO: Add description of parameter.
+        assessor: DataQualityAssessor instance for testing.
     """
     df1 = pd.DataFrame({"id": [1, 2, 3]})
     df2 = pd.DataFrame({"id": [4, 5, 6]})
