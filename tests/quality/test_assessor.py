@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from serenade_flow.quality import DataQualityAssessor
+from serenade_flow.quality.assessor import DataQualityAssessor
 
 
 @pytest.fixture  # type: ignore
