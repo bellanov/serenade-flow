@@ -3,8 +3,10 @@ ETL Pipeline Implementation.
 
 Extract, Load, and Transform data from local or remote data sources.
 
-Note: Domain-specific logic should be implemented in examples rather than here.
-See examples/ for complete ETL workflow recipes.
+Typical usage example:
+
+  # TODO: Add example usage
+
 """
 
 import json
