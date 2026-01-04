@@ -117,7 +117,10 @@ class FantasyAceCloudFunctionsPlugin:
     ) -> Optional[Dict[str, Any]]:
         # Attempt to extract fields from odds response first, fall back to event stub
         event_id = (
-            odds.get("id") or event_stub.get("id") or event_stub.get("event_id") or odds.get("event_id")
+            odds.get("id")
+            or event_stub.get("id")
+            or event_stub.get("event_id")
+            or odds.get("event_id")
         )
         if not event_id:
             return None
@@ -125,15 +128,15 @@ class FantasyAceCloudFunctionsPlugin:
         effective_sport_key = (
             odds.get("sport_key") or event_stub.get("sport_key") or sport_key
         )
-        commence_time = (
-            odds.get("commence_time") or event_stub.get("commence_time")
-        )
+        commence_time = odds.get("commence_time") or event_stub.get("commence_time")
         home_team = odds.get("home_team") or event_stub.get("home_team")
         away_team = odds.get("away_team") or event_stub.get("away_team")
         bookmakers = odds.get("bookmakers") or []
 
         # sport title lookup from sports_map
-        sport_title = odds.get("sport_title") or sports_map.get(effective_sport_key or "", None)
+        sport_title = odds.get("sport_title") or sports_map.get(
+            effective_sport_key or "", None
+        )
 
         normalized = {
             "id": event_id,

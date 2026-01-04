@@ -1,0 +1,904 @@
+{
+  "data": [
+    {
+      "key": "americanfootball_cfl",
+      "title": "CFL",
+      "description": "Canadian Football League",
+      "active": false
+    },
+    {
+      "key": "americanfootball_ncaaf",
+      "title": "NCAAF",
+      "description": "US College Football",
+      "active": true
+    },
+    {
+      "key": "americanfootball_ncaaf_championship_winner",
+      "title": "NCAAF Championship Winner",
+      "description": "US College Football Championship Winner",
+      "active": true
+    },
+    {
+      "key": "americanfootball_nfl",
+      "title": "NFL",
+      "description": "US Football",
+      "active": true
+    },
+    {
+      "key": "americanfootball_nfl_preseason",
+      "title": "NFL Preseason",
+      "description": "US Football",
+      "active": false
+    },
+    {
+      "key": "americanfootball_nfl_super_bowl_winner",
+      "title": "NFL Super Bowl Winner",
+      "description": "Super Bowl Winner 2025/2026",
+      "active": true
+    },
+    {
+      "key": "americanfootball_ufl",
+      "title": "UFL",
+      "description": "United Football League",
+      "active": false
+    },
+    {
+      "key": "aussierules_afl",
+      "title": "AFL",
+      "description": "Aussie Football",
+      "active": true
+    },
+    {
+      "key": "baseball_kbo",
+      "title": "KBO",
+      "description": "KBO League",
+      "active": false
+    },
+    {
+      "key": "baseball_milb",
+      "title": "MiLB",
+      "description": "Minor League Baseball",
+      "active": false
+    },
+    {
+      "key": "baseball_mlb",
+      "title": "MLB",
+      "description": "Major League Baseball",
+      "active": false
+    },
+    {
+      "key": "baseball_mlb_preseason",
+      "title": "MLB Preseason",
+      "description": "Major League Baseball",
+      "active": false
+    },
+    {
+      "key": "baseball_mlb_world_series_winner",
+      "title": "MLB World Series Winner",
+      "description": "World Series Winner 2026",
+      "active": true
+    },
+    {
+      "key": "baseball_ncaa",
+      "title": "NCAA Baseball",
+      "description": "US College Baseball",
+      "active": false
+    },
+    {
+      "key": "baseball_npb",
+      "title": "NPB",
+      "description": "Nippon Professional Baseball",
+      "active": false
+    },
+    {
+      "key": "basketball_euroleague",
+      "title": "Basketball Euroleague",
+      "description": "Basketball Euroleague",
+      "active": false
+    },
+    {
+      "key": "basketball_nba",
+      "title": "NBA",
+      "description": "US Basketball",
+      "active": true
+    },
+    {
+      "key": "basketball_nba_championship_winner",
+      "title": "NBA Championship Winner",
+      "description": "Championship Winner 2025/2026",
+      "active": true
+    },
+    {
+      "key": "basketball_nba_preseason",
+      "title": "NBA Preseason",
+      "description": "US Basketball",
+      "active": false
+    },
+    {
+      "key": "basketball_nba_summer_league",
+      "title": "NBA Summer League",
+      "description": "US Basketball",
+      "active": false
+    },
+    {
+      "key": "basketball_nbl",
+      "title": "NBL",
+      "description": "AU National Basketball League",
+      "active": true
+    },
+    {
+      "key": "basketball_ncaab",
+      "title": "NCAAB",
+      "description": "US College Basketball",
+      "active": true
+    },
+    {
+      "key": "basketball_ncaab_championship_winner",
+      "title": "NCAAB Championship Winner",
+      "description": "US College Basketball Championship Winner",
+      "active": true
+    },
+    {
+      "key": "basketball_wnba",
+      "title": "WNBA",
+      "description": "US Basketball",
+      "active": false
+    },
+    {
+      "key": "basketball_wncaab",
+      "title": "WNCAAB",
+      "description": "US Women's College Basketball",
+      "active": false
+    },
+    {
+      "key": "boxing_boxing",
+      "title": "Boxing",
+      "description": "Boxing Bouts",
+      "active": true
+    },
+    {
+      "key": "cricket_asia_cup",
+      "title": "Asia Cup",
+      "description": "Asia Cup",
+      "active": false
+    },
+    {
+      "key": "cricket_big_bash",
+      "title": "Big Bash",
+      "description": "Big Bash League",
+      "active": true
+    },
+    {
+      "key": "cricket_caribbean_premier_league",
+      "title": "CPLT20",
+      "description": "Caribbean Premier League",
+      "active": false
+    },
+    {
+      "key": "cricket_icc_trophy",
+      "title": "ICC Champions Trophy",
+      "description": "ICC Champions Trophy",
+      "active": false
+    },
+    {
+      "key": "cricket_icc_world_cup",
+      "title": "ICC World Cup",
+      "description": "ICC World Cup",
+      "active": false
+    },
+    {
+      "key": "cricket_icc_world_cup_womens",
+      "title": "ICC Women's World Cup",
+      "description": "ICC Women's World Cup",
+      "active": false
+    },
+    {
+      "key": "cricket_international_t20",
+      "title": "International Twenty20",
+      "description": "International Twenty20",
+      "active": true
+    },
+    {
+      "key": "cricket_ipl",
+      "title": "IPL",
+      "description": "Indian Premier League",
+      "active": false
+    },
+    {
+      "key": "cricket_odi",
+      "title": "One Day Internationals",
+      "description": "One Day Internationals",
+      "active": false
+    },
+    {
+      "key": "cricket_psl",
+      "title": "Pakistan Super League",
+      "description": "Pakistan Super League",
+      "active": false
+    },
+    {
+      "key": "cricket_t20_blast",
+      "title": "T20 Blast",
+      "description": "T20 Blast",
+      "active": false
+    },
+    {
+      "key": "cricket_test_match",
+      "title": "Test Matches",
+      "description": "International Test Matches",
+      "active": false
+    },
+    {
+      "key": "cricket_the_hundred",
+      "title": "The Hundred",
+      "description": "The Hundred",
+      "active": false
+    },
+    {
+      "key": "golf_masters_tournament_winner",
+      "title": "Masters Tournament Winner",
+      "description": "2026 Winner",
+      "active": true
+    },
+    {
+      "key": "golf_pga_championship_winner",
+      "title": "PGA Championship Winner",
+      "description": "2026 Winner",
+      "active": true
+    },
+    {
+      "key": "golf_the_open_championship_winner",
+      "title": "The Open Winner",
+      "description": "2026 Winner",
+      "active": true
+    },
+    {
+      "key": "golf_us_open_winner",
+      "title": "US Open Winner",
+      "description": "2026 Winner",
+      "active": true
+    },
+    {
+      "key": "handball_germany_bundesliga",
+      "title": "Handball-Bundesliga",
+      "description": "German HBL",
+      "active": false
+    },
+    {
+      "key": "icehockey_ahl",
+      "title": "AHL",
+      "description": "American Hockey League",
+      "active": true
+    },
+    {
+      "key": "icehockey_liiga",
+      "title": "Liiga",
+      "description": "Finnish SM League",
+      "active": true
+    },
+    {
+      "key": "icehockey_mestis",
+      "title": "Mestis",
+      "description": "Finnish Mestis League",
+      "active": true
+    },
+    {
+      "key": "icehockey_nhl",
+      "title": "NHL",
+      "description": "US Ice Hockey",
+      "active": true
+    },
+    {
+      "key": "icehockey_nhl_championship_winner",
+      "title": "NHL Championship Winner",
+      "description": "Stanley Cup Winner 2025/2026",
+      "active": true
+    },
+    {
+      "key": "icehockey_nhl_preseason",
+      "title": "NHL Preseason",
+      "description": "US Ice Hockey",
+      "active": false
+    },
+    {
+      "key": "icehockey_sweden_allsvenskan",
+      "title": "HockeyAllsvenskan",
+      "description": "Swedish Hockey Allsvenskan",
+      "active": false
+    },
+    {
+      "key": "icehockey_sweden_hockey_league",
+      "title": "SHL",
+      "description": "Swedish Hockey League",
+      "active": true
+    },
+    {
+      "key": "lacrosse_ncaa",
+      "title": "NCAA Lacrosse",
+      "description": "College Lacrosse",
+      "active": false
+    },
+    {
+      "key": "lacrosse_pll",
+      "title": "PLL",
+      "description": "Premier Lacrosse League",
+      "active": false
+    },
+    {
+      "key": "mma_mixed_martial_arts",
+      "title": "MMA",
+      "description": "Mixed Martial Arts",
+      "active": true
+    },
+    {
+      "key": "politics_us_presidential_election_winner",
+      "title": "US Presidential Elections Winner",
+      "description": "2028 US Presidential Election Winner",
+      "active": true
+    },
+    {
+      "key": "rugbyleague_nrl",
+      "title": "NRL",
+      "description": "Aussie Rugby League",
+      "active": true
+    },
+    {
+      "key": "rugbyleague_nrl_state_of_origin",
+      "title": "State of Origin",
+      "description": "State of Origin series",
+      "active": true
+    },
+    {
+      "key": "rugbyunion_six_nations",
+      "title": "Six Nations",
+      "description": "Six Nations Championship",
+      "active": true
+    },
+    {
+      "key": "soccer_africa_cup_of_nations",
+      "title": "Africa Cup of Nations",
+      "description": "Africa Cup of Nations",
+      "active": true
+    },
+    {
+      "key": "soccer_argentina_primera_division",
+      "title": "Primera División - Argentina",
+      "description": "Argentine Primera División",
+      "active": false
+    },
+    {
+      "key": "soccer_australia_aleague",
+      "title": "A-League",
+      "description": "Aussie Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_austria_bundesliga",
+      "title": "Austrian Football Bundesliga",
+      "description": "Austrian Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_belgium_first_div",
+      "title": "Belgium First Div",
+      "description": "Belgian First Division A",
+      "active": true
+    },
+    {
+      "key": "soccer_brazil_campeonato",
+      "title": "Brazil Série A",
+      "description": "Brasileirão Série A",
+      "active": true
+    },
+    {
+      "key": "soccer_brazil_serie_b",
+      "title": "Brazil Série B",
+      "description": "Campeonato Brasileiro Série B",
+      "active": false
+    },
+    {
+      "key": "soccer_chile_campeonato",
+      "title": "Primera División - Chile",
+      "description": "Campeonato Chileno",
+      "active": false
+    },
+    {
+      "key": "soccer_china_superleague",
+      "title": "Super League - China",
+      "description": "Chinese Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_concacaf_gold_cup",
+      "title": "CONCACAF Gold Cup",
+      "description": "CONCACAF Gold Cup",
+      "active": false
+    },
+    {
+      "key": "soccer_concacaf_leagues_cup",
+      "title": "Leagues Cup",
+      "description": "CONCACAF Leagues Cup",
+      "active": false
+    },
+    {
+      "key": "soccer_conmebol_copa_america",
+      "title": "Copa América",
+      "description": "CONMEBOL Copa América",
+      "active": false
+    },
+    {
+      "key": "soccer_conmebol_copa_libertadores",
+      "title": "Copa Libertadores",
+      "description": "CONMEBOL Copa Libertadores",
+      "active": true
+    },
+    {
+      "key": "soccer_conmebol_copa_sudamericana",
+      "title": "Copa Sudamericana",
+      "description": "CONMEBOL Copa Sudamericana",
+      "active": true
+    },
+    {
+      "key": "soccer_denmark_superliga",
+      "title": "Denmark Superliga",
+      "description": "Danish Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_efl_champ",
+      "title": "Championship",
+      "description": "EFL Championship",
+      "active": true
+    },
+    {
+      "key": "soccer_england_efl_cup",
+      "title": "EFL Cup",
+      "description": "League Cup",
+      "active": true
+    },
+    {
+      "key": "soccer_england_league1",
+      "title": "League 1",
+      "description": "EFL League 1",
+      "active": true
+    },
+    {
+      "key": "soccer_england_league2",
+      "title": "League 2",
+      "description": "EFL League 2 ",
+      "active": true
+    },
+    {
+      "key": "soccer_epl",
+      "title": "EPL",
+      "description": "English Premier League",
+      "active": true
+    },
+    {
+      "key": "soccer_fa_cup",
+      "title": "FA Cup",
+      "description": "Football Association Challenge Cup",
+      "active": true
+    },
+    {
+      "key": "soccer_fifa_club_world_cup",
+      "title": "FIFA Club World Cup",
+      "description": "FIFA Club World Cup",
+      "active": false
+    },
+    {
+      "key": "soccer_fifa_world_cup",
+      "title": "FIFA World Cup",
+      "description": "FIFA World Cup 2026",
+      "active": true
+    },
+    {
+      "key": "soccer_fifa_world_cup_qualifiers_europe",
+      "title": "FIFA World Cup Qualifiers - Europe",
+      "description": "FIFA World Cup Qualifiers - UEFA",
+      "active": true
+    },
+    {
+      "key": "soccer_fifa_world_cup_qualifiers_south_america",
+      "title": "FIFA World Cup Qualifiers - South America",
+      "description": "FIFA World Cup Qualifiers - CONMEBOL",
+      "active": false
+    },
+    {
+      "key": "soccer_fifa_world_cup_winner",
+      "title": "FIFA World Cup Winner",
+      "description": "FIFA World Cup Winner 2026",
+      "active": true
+    },
+    {
+      "key": "soccer_fifa_world_cup_womens",
+      "title": "FIFA Women's World Cup",
+      "description": "FIFA Women's World Cup",
+      "active": false
+    },
+    {
+      "key": "soccer_finland_veikkausliiga",
+      "title": "Veikkausliiga - Finland",
+      "description": "Finnish  Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_france_ligue_one",
+      "title": "Ligue 1 - France",
+      "description": "French Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_france_ligue_two",
+      "title": "Ligue 2 - France",
+      "description": "French Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_germany_bundesliga",
+      "title": "Bundesliga - Germany",
+      "description": "German Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_germany_bundesliga2",
+      "title": "Bundesliga 2 - Germany",
+      "description": "German Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_germany_liga3",
+      "title": "3. Liga - Germany",
+      "description": "German Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_greece_super_league",
+      "title": "Super League - Greece",
+      "description": "Greek Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_italy_serie_a",
+      "title": "Serie A - Italy",
+      "description": "Italian Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_italy_serie_b",
+      "title": "Serie B - Italy",
+      "description": "Italian Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_japan_j_league",
+      "title": "J League",
+      "description": "Japan Soccer League",
+      "active": false
+    },
+    {
+      "key": "soccer_korea_kleague1",
+      "title": "K League 1",
+      "description": "Korean Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_league_of_ireland",
+      "title": "League of Ireland",
+      "description": "Airtricity League Premier Division",
+      "active": true
+    },
+    {
+      "key": "soccer_mexico_ligamx",
+      "title": "Liga MX",
+      "description": "Mexican Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_netherlands_eredivisie",
+      "title": "Dutch Eredivisie",
+      "description": "Dutch Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_norway_eliteserien",
+      "title": "Eliteserien - Norway",
+      "description": "Norwegian Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_poland_ekstraklasa",
+      "title": "Ekstraklasa - Poland",
+      "description": "Polish Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_portugal_primeira_liga",
+      "title": "Primeira Liga - Portugal",
+      "description": "Portugese Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_russia_premier_league",
+      "title": "Premier League - Russia",
+      "description": "Russian Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_spain_la_liga",
+      "title": "La Liga - Spain",
+      "description": "Spanish Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_spain_segunda_division",
+      "title": "La Liga 2 - Spain",
+      "description": "Spanish Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_spl",
+      "title": "Premiership - Scotland",
+      "description": "Scottish Premiership",
+      "active": true
+    },
+    {
+      "key": "soccer_sweden_allsvenskan",
+      "title": "Allsvenskan - Sweden",
+      "description": "Swedish Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_sweden_superettan",
+      "title": "Superettan - Sweden",
+      "description": "Swedish Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_switzerland_superleague",
+      "title": "Swiss Superleague",
+      "description": "Swiss Soccer",
+      "active": false
+    },
+    {
+      "key": "soccer_turkey_super_league",
+      "title": "Turkey Super League",
+      "description": "Turkish Soccer",
+      "active": true
+    },
+    {
+      "key": "soccer_uefa_champs_league",
+      "title": "UEFA Champions League",
+      "description": "European Champions League",
+      "active": true
+    },
+    {
+      "key": "soccer_uefa_champs_league_qualification",
+      "title": "UEFA Champions League Qualification",
+      "description": "European Champions League Qualification",
+      "active": false
+    },
+    {
+      "key": "soccer_uefa_champs_league_women",
+      "title": "UEFA Champions League Women",
+      "description": "European Champions League Women",
+      "active": false
+    },
+    {
+      "key": "soccer_uefa_euro_qualification",
+      "title": "UEFA Euro Qualification",
+      "description": "European Championship Qualification",
+      "active": false
+    },
+    {
+      "key": "soccer_uefa_europa_conference_league",
+      "title": "UEFA Europa Conference League",
+      "description": "UEFA Europa Conference League",
+      "active": false
+    },
+    {
+      "key": "soccer_uefa_europa_league",
+      "title": "UEFA Europa League",
+      "description": "European Europa League",
+      "active": true
+    },
+    {
+      "key": "soccer_uefa_european_championship",
+      "title": "UEFA Euro",
+      "description": "UEFA European Championship",
+      "active": false
+    },
+    {
+      "key": "soccer_uefa_nations_league",
+      "title": "UEFA Nations League",
+      "description": "UEFA Nations League",
+      "active": false
+    },
+    {
+      "key": "soccer_usa_mls",
+      "title": "MLS",
+      "description": "Major League Soccer",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_aus_open_singles",
+      "title": "ATP Australian Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_canadian_open",
+      "title": "ATP Canadian Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_china_open",
+      "title": "ATP China Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_cincinnati_open",
+      "title": "ATP Cincinnati Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_dubai",
+      "title": "ATP Dubai",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_french_open",
+      "title": "ATP French Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_indian_wells",
+      "title": "ATP Indian Wells",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_italian_open",
+      "title": "ATP Italian Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_madrid_open",
+      "title": "ATP Madrid Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_miami_open",
+      "title": "ATP Miami Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_monte_carlo_masters",
+      "title": "ATP Monte-Carlo Masters",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_paris_masters",
+      "title": "ATP Paris Masters",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_qatar_open",
+      "title": "ATP Qatar Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_shanghai_masters",
+      "title": "ATP Shanghai Masters",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_us_open",
+      "title": "ATP US Open",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_atp_wimbledon",
+      "title": "ATP Wimbledon",
+      "description": "Men's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_aus_open_singles",
+      "title": "WTA Australian Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_canadian_open",
+      "title": "WTA Canadian Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_china_open",
+      "title": "WTA China Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_cincinnati_open",
+      "title": "WTA Cincinnati Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_dubai",
+      "title": "WTA Dubai Championships",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_french_open",
+      "title": "WTA French Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_indian_wells",
+      "title": "WTA Indian Wells",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_italian_open",
+      "title": "WTA Italian Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_madrid_open",
+      "title": "WTA Madrid Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_miami_open",
+      "title": "WTA Miami Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_qatar_open",
+      "title": "WTA Qatar Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_us_open",
+      "title": "WTA US Open",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_wimbledon",
+      "title": "WTA Wimbledon",
+      "description": "Women's Singles",
+      "active": false
+    },
+    {
+      "key": "tennis_wta_wuhan_open",
+      "title": "WTA Wuhan Open",
+      "description": "Women's Singles",
+      "active": false
+    }
+  ]
+}

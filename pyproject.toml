@@ -14,7 +14,7 @@ description = """
   ETL Pipeline Implementation. Extract, Transform, and Load data from local or remote data sources.
   """
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -27,3 +27,9 @@ packages = ["serenade_flow/"]
 [project.urls]
 Homepage = "https://github.com/bellanov/serenade-flow"
 Issues = "https://github.com/bellanov/serenade-flow/issues"
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "*/test_*.py",
+]

@@ -1,5 +1,0 @@
-[flake8]
-max-line-length = 127
-max-complexity = 10
-exclude = venv,.venv,__pycache__,.git,node_modules,htmlcov,.pytest_cache
-ignore = E302,E128,W293 

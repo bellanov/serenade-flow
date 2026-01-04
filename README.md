@@ -1,8 +1,8 @@
 # SerenadeFlow
 
-*SerenadeFlow* is a powerful and flexible ETL (Extract, Transform, Load) pipeline framework designed to streamline data processing from both local and remote sources.
+**SerenadeFlow** is a powerful and flexible *ETL (Extract, Transform, Load)* pipeline framework designed to streamline data processing from both **local** and **remote** sources.
 
-It Extracts data from diverse sources, Transforms it through customizable and reusable operations, and Loads it into your desired destination with minimal configuration.
+It *Extracts* data from diverse sources, *Transforms* it through customizable and reusable operations, and *Loads* it into your desired destination with minimal configuration.
 
 Built to be the Swiss Army Knife of ETL solutions, SerenadeFlow offers a simple yet extensible architecture that makes data movement and transformation intuitive—whether you're a data engineer, analyst, or developer.
 
@@ -12,7 +12,37 @@ The project is configured to operate in _Python >= 3.8_ enviornments.
 
 ## Quickstart
 
-Coming Soon.
+The best way to get started with SerenadeFlow is to explore the examples. Each example is a self-contained recipe that demonstrates a specific use case:
+
+### Basic ETL Pipeline
+
+```bash
+python3 examples/basic_etl_pipeline.py --data-dir ./data --output-prefix output
+```
+
+This example demonstrates the core ETL workflow: extracting data from local JSON files, transforming it, and loading it to output files.
+
+### Remote Data Extraction
+
+```bash
+python3 examples/quickstart.py
+```
+
+This example shows how to extract data from a remote JSON API endpoint.
+
+### Using Plugins
+
+See the [Examples Documentation](examples/README.md) for more recipes and use cases.
+
+## Examples and Recipes
+
+SerenadeFlow is built around **examples** (recipes) that demonstrate how to use the framework. Each example is a self-contained script showing a specific ETL pattern:
+
+- **Basic Examples**: Core ETL workflows (`basic_etl_pipeline.py`, `hello_world.py`, `quickstart.py`)
+- **Cloud Integrations**: Examples for GCS, Firestore, and other cloud services
+- **Plugin Examples**: Demonstrations of using community plugins
+
+See the [Examples Documentation](examples/README.md) for a complete guide to available examples and how to create your own.
 
 ## Data Source Configuration
 
@@ -129,3 +159,18 @@ pipeline.load(transformed, output_prefix="fantasyace")
 ### Contributing Plugins
 
 See `serenade_flow/community/PLUGIN_TEMPLATE.md` for how to document and contribute your own plugins.
+
+## Architecture
+
+SerenadeFlow follows a plugin-based architecture where:
+
+- **Core Utilities**: The `pipeline` module provides basic utilities for data processing
+- **Plugins**: Extensible components for specific data sources and transformations
+- **Examples**: Self-contained recipes that demonstrate complete ETL workflows
+
+This architecture allows you to:
+- Use existing examples as templates for your own pipelines
+- Extend functionality through plugins
+- Build custom ETL workflows by combining plugins and utilities
+
+For new projects, we recommend starting with an example that matches your use case and customizing it as needed.

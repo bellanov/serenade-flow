@@ -1,10 +1,10 @@
-build
+black
 coverage
 flake8
+isort
 jsonschema
 pandas
 pytest
 requests
 python-dotenv
-twine
 pyarrow
