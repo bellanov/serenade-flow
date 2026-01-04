@@ -34,11 +34,7 @@ print("\nExecuting Quickstart Example\n")
 #
 # Note: Firestore integration will be supported via HTTP API in the future.
 pipeline.configure(
-    {
-        "data_source": "local",
-        "data_format": "json",
-        "data_source_path": "data/"
-    }
+    {"data_source": "local", "data_format": "json", "data_source_path": "data/"}
 )
 
 # Extract

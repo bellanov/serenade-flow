@@ -16,9 +16,7 @@ print("\nExecuting Quickstart Example\n")
 pipeline.configure(
     {
         "data_source": "remote",
-        "data_source_path": (
-            "https://getsports-twqu2g763q-uc.a.run.app/"
-        ),
+        "data_source_path": ("https://getsports-twqu2g763q-uc.a.run.app/"),
         "data_format": "json",
     }
 )
