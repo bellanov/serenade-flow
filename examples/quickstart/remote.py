@@ -27,16 +27,3 @@ print(f"Raw Data:\n {raw_data} \n")
 
 # Load
 pipeline.load(raw_data, "quickstart")
-
-
-# return {
-#         "american": [
-#             "odds/american/event_008740fcf1af65b0cc9e79.json",
-#             "odds/american/event_0089bc8773d8ce4ce20f9df90723cac9.json",
-#             # ... add more as needed ...
-#         ],
-#         "decimal": [
-#             "odds/decimal/event_0089bc8773d8ce4ce20f9df90723cac9.json",
-#             # ... add more as needed ...
-#         ]
-#     }
