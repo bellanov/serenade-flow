@@ -37,7 +37,7 @@ pipeline.configure(
     {
         "data_source": "local",
         "data_format": "json",
-        "data_source_path": ["data/file_1", "data_file_2"],
+        "data_source_path": "data/"
     }
 )
 

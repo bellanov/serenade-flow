@@ -17,8 +17,7 @@ pipeline.configure(
     {
         "data_source": "remote",
         "data_source_path": (
-            "https://storage.googleapis.com/odds-data-samples-4vuoq93m/"
-            "odds/event_96395d8faab66cf7b72830844f66eda7.json"
+            "https://getsports-twqu2g763q-uc.a.run.app/"
         ),
         "data_format": "json",
     }
