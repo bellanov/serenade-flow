@@ -1,6 +1,6 @@
 """Tests for ETL Pipeline."""
 
-import pytest
+# import pytest
 
 from serenade_flow import pipeline
 
